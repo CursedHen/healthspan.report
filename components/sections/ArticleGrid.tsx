@@ -8,11 +8,31 @@ import type { Article } from "@/types";
 import type { RSSAPIResponse, RSSSource } from "@/types/rss";
 import styles from "./ArticleGrid.module.css";
 
+// Get source-specific placeholder based on feed URL or source name
+function getSourcePlaceholder(sourceUrl: string, sourceName: string): string {
+  const url = sourceUrl.toLowerCase();
+  const name = sourceName.toLowerCase();
+  
+  if (url.includes("peterattiamd.com") || name.includes("peter attia")) {
+    return "/images/placeholders/attia.png";
+  }
+  if (url.includes("longevity.technology") || name.includes("longevity.technology")) {
+    return "/images/placeholders/longevity.png";
+  }
+  // Default fallback for other sources (NOVOS Labs, etc.)
+  return "/images/placeholders/NOVOSLabs.png";
+}
+
 function mapRSSToArticles(sources: RSSSource[]): Article[] {
   const articles: Article[] = [];
 
   for (const source of sources) {
+    const sourcePlaceholder = getSourcePlaceholder(source.source.link || "", source.source.title || "");
+    
     for (const item of source.articles) {
+      // Use item thumbnail, then source-specific placeholder (skip external source images that may fail)
+      const imageUrl = item.thumbnail || sourcePlaceholder;
+
       articles.push({
         id: item.link,
         title: item.title,
@@ -21,7 +41,7 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
         author: item.creator || source.source.title,
         publishedAt: item.pubDate,
         readTime: "5 min read",
-        imageUrl: item.thumbnail || "/images/placeholder-article.jpg",
+        imageUrl,
         slug: slugify(item.title),
         externalUrl: item.link, // Link to original article
       });

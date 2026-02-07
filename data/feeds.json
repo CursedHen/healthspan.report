@@ -4,45 +4,45 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2D2CMWXMOVWx7giW1n3LIg",
       "type": "video",
       "isTopChannel": true,
-      "image": "/images/channels/huberman.jpg",
-      "name": "Andrew Huberman"
+      "image": "https://yt3.googleusercontent.com/5ONImZvpa9_wXBnVIA2LKd1xbM4sZ9f0PO3XjVk1dMKmkd4L-zHfPU-KSxRSfvvPmxDDLKsn=s176-c-k-c0x00ffffff-no-rj",
+      "name": "Huberman Lab"
     },
     {
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8kGsMa0LygSX9nkBcBH1Sg",
       "type": "video",
       "isTopChannel": true,
-      "image": "/images/channels/attia.jpg",
-      "name": "Peter Attia MD"
+      "image": "https://yt3.googleusercontent.com/ytc/AIdro_lK_5GQ3VXLiQ_VrpW8oYKFm3gq1D2JBw8pUV5D1A=s176-c-k-c0x00ffffff-no-rj",
+      "name": "Dave Pascoe"
     },
     {
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCWF8SqJVNlx-ctXbLswcTcA",
       "type": "video",
       "isTopChannel": true,
-      "image": "/images/channels/foundmyfitness.jpg",
+      "image": "https://yt3.googleusercontent.com/ytc/AIdro_nVl-GmqxNr1pHnAJxZY0WE7MFLaLfXSFSxWPTq=s176-c-k-c0x00ffffff-no-rj",
       "name": "FoundMyFitness"
     },
     {
       "url": "https://lifespan.io/feed/",
       "type": "topic",
-      "image": "/images/sources/lifespan-io.jpg",
-      "name": "Lifespan Research Institute"
+      "image": "https://lifespan.io/wp-content/uploads/2023/07/cropped-lifespan-io-logo-180x180.png",
+      "name": "Lifespan.io"
     },
     {
       "url": "https://www.fightaging.org/feed",
       "type": "topic",
-      "image": "/images/sources/fightaging.jpg",
+      "image": "https://www.fightaging.org/wp-content/uploads/2022/05/cropped-fa-favicon-192x192.png",
       "name": "Fight Aging!"
     },
     {
       "url": "https://peterattiamd.com/feed/",
       "type": "article",
-      "image": "/images/sources/peter-attia.jpg",
+      "image": "https://peterattiamd.com/wp-content/uploads/2021/04/cropped-PA-Logo-270x270.png",
       "name": "Peter Attia MD"
     },
     {
       "url": "http://longevity.technology/feed/",
       "type": "article",
-      "image": "/images/sources/longevity-technology.jpg",
+      "image": "https://longevity.technology/wp-content/uploads/2023/01/cropped-lt-favicon-192x192.png",
       "name": "Longevity.Technology"
     },
     {

@@ -14,12 +14,18 @@ function mapRSSToTopics(sources: RSSSource[]): TrendingTopic[] {
 
   for (const source of sources) {
     for (const item of source.articles) {
+      // Use item thumbnail, fall back to source image, then placeholder
+      const imageUrl =
+        item.thumbnail ||
+        source.source.image ||
+        "/images/placeholders/topic.svg";
+
       topics.push({
         id: item.link,
         title: item.title,
         excerpt: item.contentSnippet || "",
         category: source.source.title,
-        imageUrl: item.thumbnail || "/images/placeholder-topic.jpg",
+        imageUrl,
         slug: slugify(item.title),
         isFeatured: isFirst,
         externalUrl: item.link, // Link to original article
@@ -66,31 +72,38 @@ function TopicLink({
   );
 }
 
-// Helper component for topic image
+// Helper component for topic image with error handling
 function TopicImage({
   imageUrl,
+  title,
   size = "default",
 }: {
   imageUrl: string;
+  title?: string;
   size?: "default" | "large";
 }) {
-  const hasImage = imageUrl && !imageUrl.includes("placeholder");
+  const [imageError, setImageError] = useState(false);
+  const hasImage =
+    imageUrl && !imageUrl.includes("/images/placeholders/") && !imageError;
+  const className = size === "large" ? styles.featuredImage : styles.topicImage;
 
   if (hasImage) {
     return (
-      <div
-        className={size === "large" ? styles.featuredImage : styles.topicImage}
-        style={{
-          backgroundImage: `url(${imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      <div className={className}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt={title || "Topic image"}
+          className={styles.topicImageImg}
+          onError={() => setImageError(true)}
+          loading="lazy"
+        />
+      </div>
     );
   }
 
   return (
-    <div className={size === "large" ? styles.featuredImage : styles.topicImage}>
+    <div className={`${className} ${styles.imagePlaceholderBg}`}>
       <span className={styles.imagePlaceholder}>
         <svg
           viewBox="0 0 24 24"
@@ -183,7 +196,7 @@ export default function TrendingTopics() {
           {/* Featured Topic */}
           {featured && (
             <TopicLink topic={featured} className={styles.featured}>
-              <TopicImage imageUrl={featured.imageUrl} size="large" />
+              <TopicImage imageUrl={featured.imageUrl} title={featured.title} size="large" />
               <div className={styles.featuredContent}>
                 <span className={styles.category}>{featured.category}</span>
                 <h3 className={styles.featuredTitle}>{featured.title}</h3>
@@ -200,7 +213,7 @@ export default function TrendingTopics() {
                 topic={topic}
                 className={styles.topicCard}
               >
-                <TopicImage imageUrl={topic.imageUrl} />
+                <TopicImage imageUrl={topic.imageUrl} title={topic.title} />
                 <div className={styles.topicContent}>
                   <span className={styles.topicCategory}>{topic.category}</span>
                   <h4 className={styles.topicTitle}>{topic.title}</h4>
