@@ -30,6 +30,7 @@ export interface RSSSource {
   source: {
     title: string;
     link: string;
+    feedUrl: string; // Original feed URL from feeds.json for exact matching
     image?: string;
     type: RSSContentType;
   };
