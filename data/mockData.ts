@@ -27,7 +27,7 @@ export const articles: Article[] = [
     author: "Dr. Sarah Chen",
     publishedAt: "2025-01-18",
     readTime: "8 min read",
-    imageUrl: "/images/cellular-senescence.jpg",
+    imageUrl: "/images/placeholders/article.svg",
     slug: "science-of-cellular-senescence",
   },
   {
@@ -39,7 +39,7 @@ export const articles: Article[] = [
     author: "Dr. Michael Torres",
     publishedAt: "2025-01-15",
     readTime: "12 min read",
-    imageUrl: "/images/nad-precursors.jpg",
+    imageUrl: "/images/placeholders/article.svg",
     slug: "nad-precursors-comparison",
   },
   {
@@ -51,7 +51,7 @@ export const articles: Article[] = [
     author: "Dr. Emily Watson",
     publishedAt: "2025-01-12",
     readTime: "10 min read",
-    imageUrl: "/images/rapamycin.jpg",
+    imageUrl: "/images/placeholders/article.svg",
     slug: "rapamycin-mtor-longevity",
   },
 ];
@@ -63,7 +63,7 @@ export const trendingTopics: TrendingTopic[] = [
     excerpt:
       "An in-depth look at the biological age reversal claims and what metrics actually improved over 12 months of intensive intervention.",
     category: "Protocols",
-    imageUrl: "/images/blueprint-protocol.jpg",
+    imageUrl: "/images/placeholders/topic.svg",
     slug: "bryan-johnson-blueprint-results",
     isFeatured: true,
   },
@@ -73,7 +73,7 @@ export const trendingTopics: TrendingTopic[] = [
     excerpt:
       "Comparing the two most popular glucose-regulating compounds used for anti-aging purposes.",
     category: "Supplements",
-    imageUrl: "/images/metformin-berberine.jpg",
+    imageUrl: "/images/placeholders/topic.svg",
     slug: "metformin-vs-berberine",
   },
   {
@@ -82,7 +82,7 @@ export const trendingTopics: TrendingTopic[] = [
     excerpt:
       "Zone 2 cardio, HIIT, and strength training: finding the right balance for maximum healthspan.",
     category: "Fitness",
-    imageUrl: "/images/exercise-longevity.jpg",
+    imageUrl: "/images/placeholders/topic.svg",
     slug: "optimal-exercise-longevity",
   },
 ];
@@ -91,7 +91,7 @@ export const latestVideos: Video[] = [
   {
     id: "1",
     title: "Dr. Peter Attia on the 4 Pillars of Longevity",
-    thumbnailUrl: "/images/video-attia.jpg",
+    thumbnailUrl: "/images/placeholders/video.svg",
     channelName: "Healthspan Podcast",
     views: "1.2M views",
     publishedAt: "3 days ago",
@@ -101,7 +101,7 @@ export const latestVideos: Video[] = [
   {
     id: "2",
     title: "Understanding Your Biological Age: Testing Methods Compared",
-    thumbnailUrl: "/images/video-bioage.jpg",
+    thumbnailUrl: "/images/placeholders/video.svg",
     channelName: "Longevity Lab",
     views: "450K views",
     publishedAt: "1 week ago",
@@ -111,7 +111,7 @@ export const latestVideos: Video[] = [
   {
     id: "3",
     title: "The Truth About Cold Plunges and Longevity",
-    thumbnailUrl: "/images/video-cold.jpg",
+    thumbnailUrl: "/images/placeholders/video.svg",
     channelName: "Science of Aging",
     views: "890K views",
     publishedAt: "2 weeks ago",
@@ -121,7 +121,7 @@ export const latestVideos: Video[] = [
   {
     id: "4",
     title: "Fasting Protocols: 16:8 vs OMAD vs Extended Fasts",
-    thumbnailUrl: "/images/video-fasting.jpg",
+    thumbnailUrl: "/images/placeholders/video.svg",
     channelName: "Metabolic Health",
     views: "720K views",
     publishedAt: "2 weeks ago",
@@ -131,7 +131,7 @@ export const latestVideos: Video[] = [
   {
     id: "5",
     title: "Sleep Optimization: The Foundation of Longevity",
-    thumbnailUrl: "/images/video-sleep.jpg",
+    thumbnailUrl: "/images/placeholders/video.svg",
     channelName: "Healthspan Podcast",
     views: "560K views",
     publishedAt: "3 weeks ago",
@@ -312,13 +312,13 @@ export const wellnessImages: WellnessImage[] = [
   {
     id: "1",
     title: "Morning Meditation",
-    imageUrl: "/images/wellness-meditation.jpg",
+    imageUrl: "/images/placeholders/topic.svg",
     alt: "Person meditating at sunrise",
   },
   {
     id: "2",
     title: "Healthy Nutrition",
-    imageUrl: "/images/wellness-nutrition.jpg",
+    imageUrl: "/images/placeholders/topic.svg",
     alt: "Colorful array of healthy foods",
   },
 ];

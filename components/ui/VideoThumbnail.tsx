@@ -11,7 +11,7 @@ export default function VideoThumbnail({
   variant = "default",
 }: VideoThumbnailProps) {
   const hasImage =
-    video.thumbnailUrl && !video.thumbnailUrl.includes("placeholder");
+    video.thumbnailUrl && !video.thumbnailUrl.includes("/images/placeholders/");
 
   return (
     <a

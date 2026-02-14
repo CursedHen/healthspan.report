@@ -17,11 +17,12 @@ function mapRSSToVideos(sources: RSSSource[]): Video[] {
   for (const source of sources) {
     for (const item of source.articles) {
       const videoId = extractYouTubeVideoId(item.link);
+      // Priority: item thumbnail > generated YouTube thumbnail > source image > placeholder
       const thumbnail =
         item.thumbnail ||
         (videoId
           ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-          : "/images/placeholder-video.jpg");
+          : source.source.image || "/images/placeholders/video.svg");
 
       videos.push({
         id: item.link,
