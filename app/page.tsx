@@ -8,9 +8,17 @@ import {
   TopChannels,
   TopPodcasts,
 } from "@/components/sections";
+import { getArticlesFromDB } from "@/lib/content/articles";
+import { getCurrentUser } from "@/lib/auth";
 import styles from "./page.module.css";
 
-export default function Home() {
+export default async function Home() {
+  const [user, { articles }] = await Promise.all([
+    getCurrentUser(),
+    getArticlesFromDB(6),
+  ]);
+  const isAdmin = user?.role === "admin";
+
   return (
     <div className={styles.page}>
       <Header />
@@ -26,8 +34,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Latest Articles */}
-        <ArticleGrid />
+        {/* Latest Articles (from DB) */}
+        <ArticleGrid initialArticles={articles} isAdmin={!!isAdmin} />
 
         {/* Mid-page Ad */}
         <section className={styles.adSection}>

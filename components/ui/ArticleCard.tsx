@@ -8,6 +8,8 @@ import styles from "./ArticleCard.module.css";
 interface ArticleCardProps {
   article: Article;
   variant?: "default" | "compact";
+  /** When set, shows an Edit button (for admins). */
+  onEdit?: () => void;
 }
 
 // Placeholder component for failed/missing images
@@ -38,6 +40,7 @@ function ImagePlaceholder() {
 export default function ArticleCard({
   article,
   variant = "default",
+  onEdit,
 }: ArticleCardProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -64,7 +67,17 @@ export default function ArticleCard({
   const hasImage = article.imageUrl && !imageError;
 
   return (
-    <article className={`${styles.card} ${styles[variant]}`}>
+    <article className={`${styles.card} ${styles[variant]}`} style={{ position: "relative" }}>
+      {onEdit && (
+        <button
+          type="button"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(); }}
+          className={styles.editButton}
+          aria-label="Edit article"
+        >
+          Edit
+        </button>
+      )}
       <div className={styles.imageWrapper}>
         {hasImage ? (
           <div className={styles.imageContainer}>
