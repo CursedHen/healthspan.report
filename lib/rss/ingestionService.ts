@@ -420,8 +420,8 @@ async function processYouTubeFeed(
     };
 
     // Normalize and prepare for insertion
-    const normalizedItems: CreateRSSItemInput[] = itemsToProcess
-      .map((entry) => {
+    const normalizedItems: CreateRSSItemInput[] = itemsToProcess.flatMap(
+      (entry) => {
         const guid = entry.id || "";
         const title = decodeHtmlEntities(entry.title || "");
         const externalUrl = entry.link || "";
@@ -429,29 +429,31 @@ async function processYouTubeFeed(
         const thumbnailUrl = extractThumbnail(entry);
 
         if (!guid || !title || !externalUrl || !publishedAt) {
-          return null;
+          return [];
         }
 
-        return {
-          source_id: source.id,
-          guid,
-          title,
-          slug: slugify(title),
-          excerpt: "",
-          external_url: externalUrl,
-          thumbnail_url: thumbnailUrl,
-          author: source.name,
-          published_at: publishedAt,
-          youtube_video_id: (() => {
-            const match =
-              guid.match(/yt:video:([^:]+)$/) ||
-              externalUrl.match(/[?&]v=([^&]+)/);
-            return match ? match[1] : undefined;
-          })(),
-          youtube_channel_name: source.name,
-        } satisfies CreateRSSItemInput;
-      })
-      .filter((item): item is CreateRSSItemInput => item !== null);
+        return [
+          {
+            source_id: source.id,
+            guid,
+            title,
+            slug: slugify(title),
+            excerpt: "",
+            external_url: externalUrl,
+            thumbnail_url: thumbnailUrl,
+            author: source.name,
+            published_at: publishedAt,
+            youtube_video_id: (() => {
+              const match =
+                guid.match(/yt:video:([^:]+)$/) ||
+                externalUrl.match(/[?&]v=([^&]+)/);
+              return match ? match[1] : undefined;
+            })(),
+            youtube_channel_name: source.name,
+          } satisfies CreateRSSItemInput,
+        ];
+      }
+    );
 
     if (normalizedItems.length === 0) {
       result.error = "Failed to parse YouTube feed";
