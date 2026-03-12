@@ -10,14 +10,16 @@ import {
 } from "@/components/sections";
 import { getArticlesFromDB } from "@/lib/content/articles";
 import { getTopicItemsForTrending } from "@/lib/content/topics";
+import { getVideosFromDB  } from "@/lib/content/videos";
 import { getCurrentUser } from "@/lib/auth";
 import styles from "./page.module.css";
 
 export default async function Home() {
-  const [user, { articles }, { topics }] = await Promise.all([
+  const [user, { articles }, {topics}, { videos }] = await Promise.all([
     getCurrentUser(),
     getArticlesFromDB(6),
     getTopicItemsForTrending(6),
+    getVideosFromDB(15),
   ]);
   const isAdmin = user?.role === "admin";
 
@@ -57,7 +59,7 @@ export default async function Home() {
         </section>
 
         {/* Latest Videos */}
-        <LatestVideos />
+        <LatestVideos initialVideos={videos} isAdmin={!!isAdmin} />
 
         {/* Top YouTube Channels */}
         <TopChannels />
