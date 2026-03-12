@@ -7,6 +7,7 @@ import EditVideoModal from "@/components/videos/EditVideoModal";
 import {
   formatRelativeDate,
   extractYouTubeVideoId,
+  slugify,
 } from "@/lib/rss/rssFetcher";
 import type { Video } from "@/types";
 import type { DBRSSItem } from "@/types/database";
@@ -29,6 +30,7 @@ function mapRSSToVideos(sources: RSSSource[]): Video[] {
       videos.push({
         id: item.link,
         title: item.title,
+        slug: slugify(item.title),
         thumbnailUrl: thumbnail,
         channelName: source.source.title,
         views: "", // Not available from RSS

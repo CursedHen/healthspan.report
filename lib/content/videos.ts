@@ -19,6 +19,7 @@ export function mapRSSItemToVideo(item: DBRSSItemWithSource): Video {
   return {
     id: item.id,
     title: item.title,
+    slug: item.slug,
     thumbnailUrl:
       item.thumbnail_url ||
       fallbackYouTubeThumb ||

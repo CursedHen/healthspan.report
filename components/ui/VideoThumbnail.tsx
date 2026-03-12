@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Video } from "@/types";
 import styles from "./VideoThumbnail.module.css";
 
@@ -15,6 +16,7 @@ export default function VideoThumbnail({
 }: VideoThumbnailProps) {
   const hasImage =
     video.thumbnailUrl && !video.thumbnailUrl.includes("/images/placeholders/");
+  const discussionHref = video.slug ? `/videos/${video.slug}/discussion` : null;
 
   return (
     <article className={`${styles.thumbnail} ${styles[variant]}`}>
@@ -31,6 +33,19 @@ export default function VideoThumbnail({
         >
           Edit
         </button>
+      )}
+      {discussionHref && (
+        <Link
+          href={discussionHref}
+          className={styles.commentLink}
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Open comments"
+          title="Comments"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+          </svg>
+        </Link>
       )}
       <a
         href={video.videoUrl}

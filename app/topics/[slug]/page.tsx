@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Header, Footer } from "@/components/layout";
 import TopicPageContent from "@/components/topics/TopicPageContent";
 import { getTopicConfig } from "@/lib/topics/topicConfig";
-import { getTopicArticlesFromDB } from "@/lib/content/topics";
+import { getTopicContentFromDB } from "@/lib/content/topics";
 import { getCurrentUser } from "@/lib/auth";
 import styles from "../shared.module.css";
 
@@ -34,9 +34,9 @@ export default async function TopicPage({ params }: Props) {
     notFound();
   }
 
-  const [user, { articles }] = await Promise.all([
+  const [user, { articles, videos }] = await Promise.all([
     getCurrentUser(),
-    getTopicArticlesFromDB(config.keywords),
+    getTopicContentFromDB(config.keywords),
   ]);
   const isAdmin = user?.role === "admin";
 
@@ -50,6 +50,7 @@ export default async function TopicPage({ params }: Props) {
           topicIcon={config.icon}
           keywords={config.keywords}
           initialArticles={articles}
+          initialVideos={videos}
           isAdmin={!!isAdmin}
         />
       </main>
