@@ -36,6 +36,7 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [body, setBody] = useState("");
   const [comments, setComments] = useState<CommentRow[]>([]);
@@ -157,6 +158,37 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
     void load();
   }
 
+  async function deleteComment(commentId: string, commentUserId: string) {
+    setError("");
+    const { data: authData } = await supabase.auth.getUser();
+    const userId = authData.user?.id;
+
+    if (!userId) {
+      setError("Please log in to delete your comment.");
+      return;
+    }
+
+    if (userId !== commentUserId) {
+      setError("You can only delete your own comments.");
+      return;
+    }
+
+    setDeletingCommentId(commentId);
+    const { error: deleteError } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", commentId)
+      .eq("user_id", userId);
+    setDeletingCommentId(null);
+
+    if (deleteError) {
+      setError(deleteError.message);
+      return;
+    }
+
+    void load();
+  }
+
   const total = comments.length;
 
   return (
@@ -222,7 +254,20 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
               <article key={c.id} className={styles.comment}>
                 <div className={styles.commentHeader}>
                   <span className={styles.author}>{username ?? "Member"}</span>
-                  <span className={styles.timestamp}>{formatDate(c.created_at)}</span>
+                  <div className={styles.commentActions}>
+                    <span className={styles.timestamp}>{formatDate(c.created_at)}</span>
+                    {authUserId === c.user_id && (
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => void deleteComment(c.id, c.user_id)}
+                        disabled={deletingCommentId === c.id}
+                        aria-label="Delete comment"
+                      >
+                        {deletingCommentId === c.id ? "Deleting..." : "Delete"}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className={styles.body}>{c.body}</p>
                 <div className={styles.reactionRow}>

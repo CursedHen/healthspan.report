@@ -81,6 +81,12 @@
   margin-bottom: var(--space-sm);
 }
 
+.commentActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .author {
   font-weight: 600;
   color: var(--color-text);
@@ -89,6 +95,25 @@
 .timestamp {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
+}
+
+.deleteButton {
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.deleteButton:hover:not(:disabled) {
+  color: rgba(220, 38, 38, 0.95);
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .body {
