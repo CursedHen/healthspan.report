@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui";
+import { useUserStore } from "@/store/useUserStore";
 import styles from "./CommentsSection.module.css";
 
 type ReactionValue = 1 | -1;
@@ -32,6 +33,7 @@ function formatDate(iso: string): string {
 
 export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
   const supabase = useMemo(() => createClient(), []);
+  const isAdmin = useUserStore((s) => s.profile?.role === "admin");
 
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,7 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
   const [comments, setComments] = useState<CommentRow[]>([]);
 
   const maxLen = 1000;
+  const rateLimitWindowMs = 30_000; // 30 seconds per comment per item
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,6 +97,26 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
     const { data: authData } = await supabase.auth.getUser();
     if (!authData.user) {
       setError("Please log in to comment.");
+      return;
+    }
+
+    // Simple server-enforced rate limit: 1 comment per 30s per item per user.
+    const since = new Date(Date.now() - rateLimitWindowMs).toISOString();
+    const { data: recentComments, error: recentError } = await supabase
+      .from("comments")
+      .select("id, created_at")
+      .eq("rss_item_id", rssItemId)
+      .eq("user_id", authData.user.id)
+      .gte("created_at", since)
+      .limit(1);
+
+    if (recentError) {
+      setError(recentError.message);
+      return;
+    }
+
+    if (recentComments && recentComments.length > 0) {
+      setError("You’re commenting too quickly. Please wait a few seconds and try again.");
       return;
     }
 
@@ -164,21 +187,21 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
     const userId = authData.user?.id;
 
     if (!userId) {
-      setError("Please log in to delete your comment.");
+      setError("Please log in to delete comments.");
       return;
     }
 
-    if (userId !== commentUserId) {
+    const canDeleteOwn = userId === commentUserId;
+    if (!canDeleteOwn && !isAdmin) {
       setError("You can only delete your own comments.");
       return;
     }
 
     setDeletingCommentId(commentId);
-    const { error: deleteError } = await supabase
-      .from("comments")
-      .delete()
-      .eq("id", commentId)
-      .eq("user_id", userId);
+    const query = supabase.from("comments").delete().eq("id", commentId);
+    const { error: deleteError } = isAdmin
+      ? await query
+      : await query.eq("user_id", userId);
     setDeletingCommentId(null);
 
     if (deleteError) {
@@ -256,15 +279,16 @@ export default function CommentsSection({ rssItemId }: { rssItemId: string }) {
                   <span className={styles.author}>{username ?? "Member"}</span>
                   <div className={styles.commentActions}>
                     <span className={styles.timestamp}>{formatDate(c.created_at)}</span>
-                    {authUserId === c.user_id && (
+                    {(authUserId === c.user_id || isAdmin) && (
                       <button
                         type="button"
                         className={styles.deleteButton}
                         onClick={() => void deleteComment(c.id, c.user_id)}
                         disabled={deletingCommentId === c.id}
-                        aria-label="Delete comment"
+                        aria-label={isAdmin ? "Delete comment (moderation)" : "Delete comment"}
+                        title={isAdmin ? "Remove comment (moderation)" : undefined}
                       >
-                        {deletingCommentId === c.id ? "Deleting..." : "Delete"}
+                        {deletingCommentId === c.id ? "Deleting…" : "Delete"}
                       </button>
                     )}
                   </div>
