@@ -1,0 +1,31 @@
+.wrapper {
+  margin-bottom: var(--space-2xl);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 var(--space-sm);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary-hover);
+  background: var(--color-brand-blue-sky);
+}
+
+.title {
+  margin: 0 0 var(--space-xs);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  color: var(--color-text);
+}
+
+.description {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+}

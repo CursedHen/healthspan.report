@@ -9,3 +9,5 @@ export { default as ChannelCard } from "./ChannelCard";
 export { default as PodcastCard } from "./PodcastCard";
 export { default as SubscribeForm } from "./SubscribeForm";
 export { default as Carousel } from "./Carousel";
+export { default as SuggestionForm } from "./SuggestionForm";
+export { default as EditorialPageIntro } from "./EditorialPageIntro";

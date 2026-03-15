@@ -101,7 +101,7 @@ export default function Header() {
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="primary" size="sm">
                   Log in
                 </Button>
               </Link>

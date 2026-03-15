@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header, Footer } from "@/components/layout";
-import { ArticleCard } from "@/components/ui";
+import { ArticleCard, EditorialPageIntro } from "@/components/ui";
 import { slugify } from "@/lib/rss/rssFetcher";
 import type { Article } from "@/types";
 import type { RSSAPIResponse, RSSSource } from "@/types/rss";
 import styles from "./page.module.css";
 
-// Get source-specific placeholder based on feed URL or source name
 function getSourcePlaceholder(sourceUrl: string, sourceName: string): string {
   const url = sourceUrl.toLowerCase();
   const name = sourceName.toLowerCase();
-  
+
   if (url.includes("peterattiamd.com") || name.includes("peter attia")) {
     return "/images/placeholders/attia.png";
   }
-  if (url.includes("longevity.technology") || name.includes("longevity.technology")) {
+  if (
+    url.includes("longevity.technology") ||
+    name.includes("longevity.technology")
+  ) {
     return "/images/placeholders/longevity.png";
   }
-  // Default fallback for other sources (NOVOS Labs, etc.)
   return "/images/placeholders/NOVOSLabs.png";
 }
 
@@ -27,10 +28,12 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
   const articles: Article[] = [];
 
   for (const source of sources) {
-    const sourcePlaceholder = getSourcePlaceholder(source.source.link || "", source.source.title || "");
-    
+    const sourcePlaceholder = getSourcePlaceholder(
+      source.source.link || "",
+      source.source.title || ""
+    );
+
     for (const item of source.articles) {
-      // Use item thumbnail, then source-specific placeholder (skip external source images that may fail)
       const imageUrl = item.thumbnail || sourcePlaceholder;
 
       articles.push({
@@ -39,8 +42,9 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
         excerpt: item.contentSnippet || "",
         category: source.source.title,
         author: item.creator || source.source.title,
+        sourceName: source.source.title,
         publishedAt: item.pubDate,
-        readTime: "5 min read",
+        readTime: estimateReadTime(item.contentSnippet || item.title),
         imageUrl,
         slug: slugify(item.title),
         externalUrl: item.link,
@@ -48,7 +52,6 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
     }
   }
 
-  // Sort by date
   return articles.sort(
     (a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
@@ -67,8 +70,7 @@ export default function ArticlesPage() {
         if (!response.ok) throw new Error("Failed to fetch articles");
 
         const data: RSSAPIResponse = await response.json();
-        const mappedArticles = mapRSSToArticles(data.sources);
-        setArticles(mappedArticles);
+        setArticles(mapRSSToArticles(data.sources));
       } catch (err) {
         console.error("Failed to fetch RSS articles:", err);
         setError("Failed to load articles. Please try again later.");
@@ -80,30 +82,24 @@ export default function ArticlesPage() {
     fetchArticles();
   }, []);
 
+  const leadStory = articles[0];
+  const remainingStories = useMemo(() => articles.slice(1), [articles]);
+
   return (
     <div className={styles.page}>
       <Header />
       <main className={styles.main}>
         <div className={styles.container}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>Articles</h1>
-            <p className={styles.subtitle}>
-              Evidence-based research and insights on longevity, healthspan, and
-              wellness.
-            </p>
-          </div>
+          <EditorialPageIntro
+            badge="Research Feed"
+            title="Articles"
+            description="Daily healthspan reporting with source-first coverage and quick-read metadata."
+          />
 
           {isLoading ? (
             <div className={styles.grid}>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className={styles.skeleton}>
-                  <div className={styles.skeletonImage} />
-                  <div className={styles.skeletonContent}>
-                    <div className={styles.skeletonCategory} />
-                    <div className={styles.skeletonTitle} />
-                    <div className={styles.skeletonExcerpt} />
-                  </div>
-                </div>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className={styles.skeleton} />
               ))}
             </div>
           ) : error ? (
@@ -115,15 +111,35 @@ export default function ArticlesPage() {
               <p>No articles available at the moment.</p>
             </div>
           ) : (
-            <div className={styles.grid}>
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
+            <>
+              {leadStory && (
+                <section className={styles.leadSection}>
+                  <h2 className={styles.sectionTitle}>Top Story</h2>
+                  <div className={styles.leadGrid}>
+                    <ArticleCard article={leadStory} />
+                  </div>
+                </section>
+              )}
+
+              <section>
+                <h2 className={styles.sectionTitle}>Latest Coverage</h2>
+                <div className={styles.grid}>
+                  {remainingStories.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              </section>
+            </>
           )}
         </div>
       </main>
       <Footer />
     </div>
   );
+}
+
+function estimateReadTime(content: string): string {
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(5, Math.ceil(words / 170));
+  return `~${minutes} min read`;
 }
