@@ -92,6 +92,11 @@ export default function ArticlesPage() {
       ).size,
     [articles]
   );
+  const leadHref = leadStory
+    ? leadStory.externalUrl || `/articles/${leadStory.slug}`
+    : "";
+  const leadIsExternal = Boolean(leadStory?.externalUrl);
+  const leadSourceUrl = getSourceOrigin(leadStory?.externalUrl);
 
   return (
     <div className={styles.page}>
@@ -132,15 +137,13 @@ export default function ArticlesPage() {
             <>
               {leadStory && (
                 <section className={styles.leadSection}>
-                  <div className={styles.leadHeader}>
-                    <p className={styles.sectionEyebrow}>Lead Story</p>
-                  </div>
                   <div className={styles.leadGrid}>
-                    <div className={styles.leadContent}>
+                    <article className={styles.leadContent}>
+                      <p className={styles.sectionEyebrow}>Top Story</p>
                       <h2 className={styles.leadTitle}>
-                        {leadStory.externalUrl ? (
+                        {leadIsExternal ? (
                           <a
-                            href={leadStory.externalUrl}
+                            href={leadHref}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.leadTitleLink}
@@ -166,21 +169,33 @@ export default function ArticlesPage() {
                         <span className={styles.dot}>|</span>
                         <span>{leadStory.readTime}</span>
                       </p>
-                      {leadStory.externalUrl ? (
-                        <a
-                          href={leadStory.externalUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.readLink}
-                        >
-                          Read full story
-                        </a>
-                      ) : (
-                        <Link href={`/articles/${leadStory.slug}`} className={styles.readLink}>
-                          Read full story
-                        </Link>
-                      )}
-                    </div>
+                      <div className={styles.leadActions}>
+                        {leadIsExternal ? (
+                          <a
+                            href={leadHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.readLinkPrimary}
+                          >
+                            Read full story
+                          </a>
+                        ) : (
+                          <Link href={`/articles/${leadStory.slug}`} className={styles.readLinkPrimary}>
+                            Read full story
+                          </Link>
+                        )}
+                        {leadSourceUrl && (
+                          <a
+                            href={leadSourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.readLinkSecondary}
+                          >
+                            Original source
+                          </a>
+                        )}
+                      </div>
+                    </article>
                     <div className={styles.leadCardWrap}>
                       <ArticleCard article={leadStory} />
                     </div>
@@ -224,4 +239,13 @@ function formatDate(rawDate: string): string {
     day: "numeric",
     year: "numeric",
   }).format(date);
+}
+
+function getSourceOrigin(rawUrl?: string): string | null {
+  if (!rawUrl) return null;
+  try {
+    return new URL(rawUrl).origin;
+  } catch {
+    return null;
+  }
 }
