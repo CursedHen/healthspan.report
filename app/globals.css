@@ -12,7 +12,7 @@
   --color-primary-light: #E8F4F5;
   --color-primary-muted: #B8DFE2;
 
-  /* Brand Colors - Blue */
+  /* Brand Colors */
   --color-brand-blue-sky: #D5ECFF;
   --color-brand-green: #6EBE3F;
 
@@ -34,6 +34,8 @@
   --color-surface: #FFFFFF;
   --color-surface-alt: #F4FAFF;
   --color-surface-elevated: #FFFFFF;
+  --color-bg-lightblue: #E4F3FF;
+  --color-bg-lightgreen: #F0FFE5;
 
   /* Borders */
   --color-border: #E2E8F0;

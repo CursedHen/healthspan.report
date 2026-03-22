@@ -44,10 +44,83 @@ function CommentIcon() {
   );
 }
 
+function TopicSection({
+  title,
+  viewAllHref,
+  articles,
+}: {
+  title: string;
+  viewAllHref: string;
+  articles: HomeArticle[];
+}) {
+  const columns = useMemo(
+    () =>
+      Array.from({ length: 3 }, (_, columnIndex) =>
+        loopItems(articles, 6, columnIndex)
+      ),
+    [articles]
+  );
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+        <Link href={viewAllHref} className={styles.viewAll}>
+          View all
+        </Link>
+      </div>
+
+      <div className={styles.trendingColumns}>
+        {columns.map((column, columnIndex) => (
+          <div
+            key={`column-${columnIndex}`}
+            className={`${styles.topicColumn} ${
+              columnIndex === 1 ? styles.topicColumnAlt : ""
+            }`}
+          >
+            {column.map((article, rowIndex) => {
+              const href = normalizeHref(article.externalUrl, "/articles");
+              const isExternal = isExternalHref(href);
+
+              return (
+                <a
+                  key={`${article.id}-${columnIndex}-${rowIndex}`}
+                  href={href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className={styles.topicRow}
+                >
+                  <div className={styles.topicThumb}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={article.imageUrl}
+                      alt={article.title}
+                      className={styles.thumbImage}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className={styles.topicMeta}>
+                    <h4>{article.title}</h4>
+                    <p>
+                      {formatDate(article.publishedAt)}
+                      <span>|</span>
+                      {article.readTime}
+                    </p>
+                  </div>
+                  <CommentIcon />
+                </a>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [videoItems, setVideoItems] = useState<HomeVideo[]>(createFallbackVideos());
   const [articleItems, setArticleItems] = useState<HomeArticle[]>(createFallbackArticles());
-  const videoFilters = ["For You", "Latest", "Research", "Interviews", "Podcasts"];
 
   useEffect(() => {
     let isCancelled = false;
@@ -92,16 +165,6 @@ export default function Home() {
     return loopItems(base, 6);
   }, [videoItems]);
 
-  const trendingColumns = useMemo(
-    () =>
-      Array.from({ length: 3 }, (_, columnIndex) =>
-        loopItems(articleItems, 6, columnIndex)
-      ),
-    [articleItems]
-  );
-
-  const lifestyleStories = useMemo(() => loopItems(articleItems, 4), [articleItems]);
-
   const featuredVideoHref = normalizeHref(featuredVideo.videoUrl, "/videos");
   const featuredVideoExternal = isExternalHref(featuredVideoHref);
 
@@ -117,19 +180,6 @@ export default function Home() {
               <Link href="/videos" className={styles.viewAll}>
                 View all videos
               </Link>
-            </div>
-            <div className={styles.videoFilters} aria-label="Video feed filters">
-              {videoFilters.map((filter, index) => (
-                <button
-                  key={filter}
-                  type="button"
-                  className={`${styles.videoFilter} ${
-                    index === 0 ? styles.videoFilterActive : ""
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
             </div>
             <div className={styles.featuredVideoLayout}>
               <div className={styles.playerColumn}>
@@ -165,142 +215,59 @@ export default function Home() {
 
               <aside className={styles.upNextPanel} aria-label="Up next videos">
                 <p className={styles.upNextHeading}>Up next</p>
-                {sideVideos.map((video, index) => {
-                  const href = normalizeHref(video.videoUrl, "/videos");
-                  const isExternal = isExternalHref(href);
+                <div className={styles.upNextGrid}>
+                  {sideVideos.map((video, index) => {
+                    const href = normalizeHref(video.videoUrl, "/videos");
+                    const isExternal = isExternalHref(href);
 
-                  return (
-                    <a
-                      key={`${video.id}-${index}`}
-                      href={href}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noopener noreferrer" : undefined}
-                      className={styles.upNextItem}
-                    >
-                      <div className={styles.upNextThumb}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={video.thumbnailUrl}
-                          alt={video.title}
-                          className={styles.thumbImage}
-                          loading="lazy"
-                        />
-                        {video.duration && (
-                          <span className={styles.upNextDuration}>{video.duration}</span>
-                        )}
-                      </div>
-                      <div className={styles.upNextMeta}>
-                        <h4>{video.title}</h4>
-                        <p>{video.channelName}</p>
-                        <p>{video.publishedAt}</p>
-                      </div>
-                    </a>
-                  );
-                })}
+                    return (
+                      <a
+                        key={`${video.id}-${index}`}
+                        href={href}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                        className={styles.upNextItem}
+                      >
+                        <div className={styles.upNextThumb}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={video.thumbnailUrl}
+                            alt={video.title}
+                            className={styles.thumbImage}
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className={styles.upNextMeta}>
+                          <h4>{video.title}</h4>
+                          <p className={styles.upNextDate}>
+                            {video.publishedAt}
+                            {video.duration && ` • ${video.duration}`}
+                          </p>
+                          <p className={styles.upNextChannel}>{video.channelName}</p>
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
               </aside>
             </div>
           </section>
 
           <div className={styles.adBanner}>Advertisement</div>
 
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Trending Topics</h2>
-              <Link href="/topics" className={styles.viewAll}>
-                View all
-              </Link>
-            </div>
-
-            <div className={styles.trendingColumns}>
-              {trendingColumns.map((column, columnIndex) => (
-                <div
-                  key={`column-${columnIndex}`}
-                  className={`${styles.topicColumn} ${
-                    columnIndex === 1 ? styles.topicColumnAlt : ""
-                  }`}
-                >
-                  {column.map((article, rowIndex) => {
-                    const href = normalizeHref(article.externalUrl, "/articles");
-                    const isExternal = isExternalHref(href);
-
-                    return (
-                      <a
-                        key={`${article.id}-${columnIndex}-${rowIndex}`}
-                        href={href}
-                        target={isExternal ? "_blank" : undefined}
-                        rel={isExternal ? "noopener noreferrer" : undefined}
-                        className={styles.topicRow}
-                      >
-                        <div className={styles.topicThumb}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={article.imageUrl}
-                            alt={article.title}
-                            className={styles.thumbImage}
-                            loading="lazy"
-                          />
-                        </div>
-                        <div className={styles.topicMeta}>
-                          <h4>{article.title}</h4>
-                          <p>
-                            {formatDate(article.publishedAt)}
-                            <span>|</span>
-                            {article.readTime}
-                          </p>
-                        </div>
-                        <CommentIcon />
-                      </a>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </section>
+          <TopicSection
+            title="Trending Topics"
+            viewAllHref="/topics"
+            articles={articleItems}
+          />
 
           <div className={styles.adBanner}>Advertisement</div>
 
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Lifestyle News</h2>
-              <Link href="/articles" className={styles.viewAll}>
-                Browse all
-              </Link>
-            </div>
-
-            <div className={styles.lifestyleGrid}>
-              {lifestyleStories.map((story, index) => {
-                const href = normalizeHref(story.externalUrl, "/articles");
-                const isExternal = isExternalHref(href);
-
-                return (
-                  <a
-                    key={`${story.id}-life-${index}`}
-                    href={href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                    className={styles.lifestyleCard}
-                  >
-                    <div className={styles.lifestyleImage}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={story.imageUrl}
-                        alt={story.title}
-                        className={styles.thumbImage}
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className={styles.lifestyleContent}>
-                      <h3>{story.title}</h3>
-                      <p>{story.excerpt}</p>
-                      <span className={styles.lifestyleMeta}>
-                        {formatDate(story.publishedAt)} | {story.readTime}
-                      </span>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </section>
+          <TopicSection
+            title="Lifestyle News"
+            viewAllHref="/articles"
+            articles={articleItems}
+          />
         </div>
       </main>
 
