@@ -102,3 +102,27 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .panel,
+:global([data-theme="dark"]) .topicCard {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .icon {
+  background: #1a2e46;
+  border-color: #2d4a65;
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .topicName {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .count {
+  color: #9fb2c8;
+}

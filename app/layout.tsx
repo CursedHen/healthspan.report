@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
+
+const THEME_INIT_SCRIPT = `(() => {
+  try {
+    const key = "healthspan-theme";
+    const stored = localStorage.getItem(key);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme = stored === "dark" || stored === "light" ? stored : (prefersDark ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+  } catch (_) {}
+})();`;
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -49,7 +61,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
+      </head>
       <body className={`${roboto.variable} antialiased`}>
         {children}
       </body>

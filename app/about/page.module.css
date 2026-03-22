@@ -120,3 +120,32 @@
     padding: 1.05rem;
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .panel,
+:global([data-theme="dark"]) .topicCard,
+:global([data-theme="dark"]) .ctaPanel {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .sectionTitle,
+:global([data-theme="dark"]) .topicTitle,
+:global([data-theme="dark"]) .ctaTitle {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .sectionText,
+:global([data-theme="dark"]) .topicText,
+:global([data-theme="dark"]) .ctaText {
+  color: #9fb2c8;
+}
+
+:global([data-theme="dark"]) .topicIcon {
+  background: #1a2e46;
+  border-color: #2d4a65;
+  color: #8fd0f3;
+}

@@ -94,6 +94,35 @@
   --z-tooltip: 600;
 }
 
+[data-theme="dark"] {
+  --color-primary: #4aaedc;
+  --color-primary-hover: #7cc9ee;
+  --color-primary-light: #1d3b56;
+  --color-primary-muted: #245274;
+
+  --color-brand-blue-sky: #b8cfe8;
+  --color-brand-green: #82cc52;
+
+  --color-accent: #37d8c6;
+  --color-accent-hover: #5ce3d5;
+
+  --color-text: #e3edf8;
+  --color-text-secondary: #c1d0df;
+  --color-text-muted: #9fb2c8;
+  --color-text-light: #8199b3;
+  --color-text-white: #ffffff;
+
+  --color-bg: #0c1421;
+  --color-bg-alt: #131f31;
+  --color-bg-dark: #081220;
+  --color-surface: #142236;
+  --color-surface-alt: #182b41;
+  --color-surface-elevated: #1b2f47;
+
+  --color-border: #28405a;
+  --color-border-light: #1a2d44;
+}
+
 /* Tailwind Theme Integration */
 @theme inline {
   --color-background: var(--color-bg);
@@ -118,6 +147,7 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
   line-height: 1.6;
+  transition: background-color var(--transition-base), color var(--transition-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

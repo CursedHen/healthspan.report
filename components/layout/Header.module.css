@@ -58,12 +58,18 @@
   justify-content: center;
   width: 38px;
   height: 38px;
-  margin-left: auto;
   border: none;
   background: transparent;
   border-radius: var(--radius-sm);
   color: #054667;
   cursor: pointer;
+}
+
+.mobileActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
 }
 
 .mobileMenuButton:hover {
@@ -195,7 +201,67 @@
     display: flex;
   }
 
-  .mobileMenuButton {
+  .mobileActions {
     display: none;
   }
+}
+
+:global([data-theme="dark"]) .header {
+  background: #101d2d;
+  border-bottom-color: #283e57;
+}
+
+:global([data-theme="dark"]) .navLink {
+  color: #c5d9ed;
+}
+
+:global([data-theme="dark"]) .navLink:hover {
+  background: rgba(91, 147, 191, 0.2);
+}
+
+:global([data-theme="dark"]) .mobileMenuButton {
+  color: #c5d9ed;
+}
+
+:global([data-theme="dark"]) .mobileMenuButton:hover {
+  background: rgba(91, 147, 191, 0.2);
+}
+
+:global([data-theme="dark"]) .userButton:hover {
+  background: rgba(91, 147, 191, 0.2);
+}
+
+:global([data-theme="dark"]) .userName,
+:global([data-theme="dark"]) .chevron {
+  color: #d5e5f5;
+}
+
+:global([data-theme="dark"]) .dropdown {
+  border-color: #29435f;
+  background: #15273b;
+}
+
+:global([data-theme="dark"]) .dropdownHeader {
+  background: #1b3047;
+}
+
+:global([data-theme="dark"]) .dropdownName {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .dropdownEmail {
+  color: #a8bfd5;
+}
+
+:global([data-theme="dark"]) .dropdownDivider {
+  border-top-color: #2c4662;
+}
+
+:global([data-theme="dark"]) .dropdownItem {
+  color: #c7d9ec;
+}
+
+:global([data-theme="dark"]) .dropdownItem:hover {
+  background: #1d344c;
+  color: #88c9f4;
 }

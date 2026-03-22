@@ -33,3 +33,21 @@
   line-height: 1.55;
   color: #48637d;
 }
+
+:global([data-theme="dark"]) .wrapper {
+  border-bottom-color: #2a435e;
+}
+
+:global([data-theme="dark"]) .badge {
+  color: #8fd0f3;
+  background: #1a2e46;
+  border-color: #2d4a65;
+}
+
+:global([data-theme="dark"]) .title {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .description {
+  color: #9fb2c8;
+}

@@ -64,3 +64,20 @@
 .large .meta {
   font-size: 0.72rem;
 }
+
+:global([data-theme="dark"]) .thumbnail {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .thumbnail:hover {
+  border-color: #3f6282;
+}
+
+:global([data-theme="dark"]) .title {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .meta {
+  color: #9fb2c8;
+}

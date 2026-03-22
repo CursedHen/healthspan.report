@@ -416,3 +416,77 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .section {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .sectionTitle,
+:global([data-theme="dark"]) .playerTitle,
+:global([data-theme="dark"]) .topicMeta h4,
+:global([data-theme="dark"]) .lifestyleContent h3,
+:global([data-theme="dark"]) .upNextMeta h4 {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .viewAll,
+:global([data-theme="dark"]) .playerSubline,
+:global([data-theme="dark"]) .upNextMeta p,
+:global([data-theme="dark"]) .topicMeta p,
+:global([data-theme="dark"]) .lifestyleContent p,
+:global([data-theme="dark"]) .lifestyleMeta,
+:global([data-theme="dark"]) .upNextHeading {
+  color: #9fb2c8;
+}
+
+:global([data-theme="dark"]) .videoFilter {
+  border-color: #2b4661;
+  background: #1a2e46;
+  color: #d0e1f2;
+}
+
+:global([data-theme="dark"]) .videoFilterActive {
+  background: #2d9fd8;
+  border-color: #2d9fd8;
+  color: #081220;
+}
+
+:global([data-theme="dark"]) .featuredHero,
+:global([data-theme="dark"]) .upNextPanel,
+:global([data-theme="dark"]) .lifestyleCard {
+  border-color: #2a445f;
+  background: #142236;
+}
+
+:global([data-theme="dark"]) .upNextItem:hover {
+  background: #1c3149;
+}
+
+:global([data-theme="dark"]) .adBanner {
+  border-color: #36526d;
+  background: #162639;
+  color: #9eb4ca;
+}
+
+:global([data-theme="dark"]) .topicColumn {
+  background: #182a3f;
+  border-color: #29425d;
+}
+
+:global([data-theme="dark"]) .topicColumnAlt {
+  background: #1a2f47;
+  border-color: #2c4865;
+}
+
+:global([data-theme="dark"]) .topicRow {
+  border-bottom-color: rgba(159, 178, 200, 0.28);
+}
+
+:global([data-theme="dark"]) .commentIcon {
+  color: #93adc4;
+}

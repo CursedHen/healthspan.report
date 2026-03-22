@@ -202,3 +202,45 @@
     font-size: 1.08rem;
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .metaPill {
+  border-color: #2d4a65;
+  background: #1a2e46;
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .sectionPanel,
+:global([data-theme="dark"]) .paper,
+:global([data-theme="dark"]) .skeleton {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .journal {
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .year,
+:global([data-theme="dark"]) .paperAuthors,
+:global([data-theme="dark"]) .paperSummary {
+  color: #9fb2c8;
+}
+
+:global([data-theme="dark"]) .paperTitle {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .readMore {
+  border-color: #2d4a65;
+  background: #1a2e46;
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .readMore:hover {
+  background: #223853;
+  color: #a9dcf8;
+}

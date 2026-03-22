@@ -9,3 +9,7 @@
   background: #f6f7f8;
   padding: 2.25rem 0 3rem;
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}

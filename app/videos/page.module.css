@@ -137,3 +137,26 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .metaPill {
+  border-color: #2d4a65;
+  background: #1a2e46;
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .sectionPanel {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .sectionTitle {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .sectionCount {
+  color: #9fb2c8;
+}

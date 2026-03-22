@@ -97,3 +97,28 @@
 .compact .meta {
   font-size: 0.66rem;
 }
+
+:global([data-theme="dark"]) .card {
+  background: #142236;
+  border-color: #28405a;
+}
+
+:global([data-theme="dark"]) .card:hover {
+  border-color: #3f6282;
+}
+
+:global([data-theme="dark"]) .title {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .titleLink:hover .title {
+  color: #9cd5f5;
+}
+
+:global([data-theme="dark"]) .meta {
+  color: #9fb2c8;
+}
+
+:global([data-theme="dark"]) .dot {
+  color: #7f96ac;
+}

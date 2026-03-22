@@ -261,3 +261,56 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+:global([data-theme="dark"]) .main {
+  background: #0c1421;
+}
+
+:global([data-theme="dark"]) .metaPill,
+:global([data-theme="dark"]) .sectionEyebrow {
+  border-color: #2d4a65;
+  background: #1a2e46;
+  color: #8fd0f3;
+}
+
+:global([data-theme="dark"]) .leadContent,
+:global([data-theme="dark"]) .sectionPanel {
+  border-color: #28405a;
+  background: #142236;
+}
+
+:global([data-theme="dark"]) .leadTitleLink,
+:global([data-theme="dark"]) .sectionTitle {
+  color: #e3edf8;
+}
+
+:global([data-theme="dark"]) .leadExcerpt,
+:global([data-theme="dark"]) .leadMeta,
+:global([data-theme="dark"]) .sectionCount {
+  color: #9fb2c8;
+}
+
+:global([data-theme="dark"]) .dot {
+  color: #7f96ac;
+}
+
+:global([data-theme="dark"]) .readLinkPrimary {
+  color: #081220;
+  background: #51b4e1;
+  border-color: #51b4e1;
+}
+
+:global([data-theme="dark"]) .readLinkPrimary:hover {
+  background: #76c7ec;
+  border-color: #76c7ec;
+  color: #081220;
+}
+
+:global([data-theme="dark"]) .readLinkSecondary {
+  border-color: #355573;
+  color: #9ed2f0;
+}
+
+:global([data-theme="dark"]) .readLinkSecondary:hover {
+  background: #1a2e46;
+}
