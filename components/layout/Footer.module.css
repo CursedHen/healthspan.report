@@ -1,7 +1,5 @@
 .footer {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  width: 100%;
   margin-top: auto;
   background: var(--color-bg-dark);
   border-top: 1px solid color-mix(in srgb, var(--color-brand-blue-sky) 26%, transparent);
@@ -35,6 +33,7 @@
 .footerLogo {
   width: clamp(220px, 18vw, 280px);
   height: auto;
+  transform: translateX(-2vw);
 }
 
 .tagline {
