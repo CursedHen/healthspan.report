@@ -183,7 +183,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background-color: #0f1923;
+  background-color: var(--color-text);
 }
 
 .upNextMeta {
@@ -425,7 +425,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  background-color: #0c2f45;
+  background-color: var(--color-text);
 }
 
 .videoCardContent {
@@ -498,6 +498,7 @@
   .trendingColumns {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
 
   .lifestyleGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));

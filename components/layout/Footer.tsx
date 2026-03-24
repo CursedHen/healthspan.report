@@ -95,7 +95,9 @@ export default function Footer() {
                 <p className={styles.columnDescription}>
                   Get the latest healthspan and longevity research delivered weekly.
                 </p>
-                <SubscribeForm variant="stacked" />
+                <div id="footer-subscribe">
+                  <SubscribeForm variant="stacked" />
+                </div>
               </div>
             </section>
 

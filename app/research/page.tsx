@@ -180,7 +180,13 @@ export default function ResearchPage() {
             <section className={styles.sectionPanel}>
               <div className={styles.papers}>
                 {papers.map((paper) => (
-                  <article key={paper.id} className={styles.paper}>
+                  <a
+                    key={paper.id}
+                    href={paper.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.paper}
+                  >
                     <div className={styles.paperMeta}>
                       <span className={styles.journal}>{paper.source}</span>
                       <span className={styles.year}>{paper.year}</span>
@@ -192,15 +198,7 @@ export default function ResearchPage() {
                     {paper.summary && (
                       <p className={styles.paperSummary}>{paper.summary}</p>
                     )}
-                    <a
-                      href={paper.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.readMore}
-                    >
-                      Open source
-                    </a>
-                  </article>
+                  </a>
                 ))}
               </div>
             </section>
