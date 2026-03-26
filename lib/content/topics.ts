@@ -5,8 +5,10 @@
 import { getRSSItemsByType } from "@/lib/actions/rss";
 import { articleMatchesTopic } from "@/lib/topics/filtering";
 import { mapRSSItemToArticle } from "@/lib/content/articles";
+import { mapRSSItemToVideo } from "@/lib/content/videos";
 import type { DBRSSItemWithSource } from "@/types/database";
 import type { Article } from "@/types";
+import type { Video } from "@/types";
 import type { TrendingTopic } from "@/types";
 
 const DEFAULT_TOPIC_PLACEHOLDER = "/images/placeholders/topic.svg";
@@ -45,26 +47,36 @@ export async function getTopicItemsForTrending(limit: number = 6): Promise<{
   return { topics };
 }
 
-/** Get articles from DB for a topic slug page (article + topic sources), filtered by keywords. */
-export async function getTopicArticlesFromDB(keywords: string[]): Promise<{
+/** Get topic page content from DB, filtered by topic keywords. */
+export async function getTopicContentFromDB(keywords: string[]): Promise<{
   articles: Article[];
+  videos: Video[];
   error?: string;
 }> {
-  const [articleResult, topicResult] = await Promise.all([
+  const [articleResult, topicResult, videoResult] = await Promise.all([
     getRSSItemsByType("article", 100),
     getRSSItemsByType("topic", 100),
+    getRSSItemsByType("video", 100),
   ]);
   const articleItems = articleResult.data ?? [];
   const topicItems = topicResult.data ?? [];
+  const videoItems = videoResult.data ?? [];
   const allItems: DBRSSItemWithSource[] = [...articleItems, ...topicItems].sort(
     (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
   );
 
-  const filtered = keywords.length === 0
+  const filteredArticles = keywords.length === 0
     ? allItems
     : allItems.filter((item) =>
         articleMatchesTopic(item.title, item.excerpt || "", keywords)
       );
-  const articles = filtered.map(mapRSSItemToArticle);
-  return { articles };
+  const filteredVideos = keywords.length === 0
+    ? videoItems
+    : videoItems.filter((item) =>
+        articleMatchesTopic(item.title, item.excerpt || "", keywords)
+      );
+
+  const articles = filteredArticles.map(mapRSSItemToArticle);
+  const videos = filteredVideos.map(mapRSSItemToVideo);
+  return { articles, videos };
 }

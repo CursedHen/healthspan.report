@@ -324,6 +324,53 @@ export async function getRSSItemById(
 }
 
 /**
+ * Get a single RSS item by slug, constrained to a content type (via rss_sources).
+ * Used for detail/discussion pages where URL is slug-based.
+ */
+export async function getRSSItemBySlugAndType(
+  contentType: RSSContentType,
+  slug: string
+): Promise<ActionResult<DBRSSItemWithSource>> {
+  try {
+    const supabase = await createClient();
+
+    const { data: sources, error: sourcesError } = await supabase
+      .from("rss_sources")
+      .select("id")
+      .eq("content_type", contentType)
+      .eq("is_active", true);
+
+    if (sourcesError) return { error: sourcesError.message };
+    if (!sources || sources.length === 0) return { error: "No sources found" };
+
+    const sourceIds = sources.map((s) => s.id);
+
+    const { data, error } = await supabase
+      .from("rss_items")
+      .select(
+        `
+        *,
+        source:rss_sources(*)
+      `
+      )
+      .in("source_id", sourceIds)
+      .eq("slug", slug)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) return { error: error.message };
+    if (!data) return { error: "Item not found" };
+
+    return { data: data as DBRSSItemWithSource };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Failed to fetch RSS item",
+    };
+  }
+}
+
+/**
  * Get YouTube videos from RSS items
  */
 export async function getYouTubeVideos(
