@@ -10,6 +10,7 @@ import {
 } from "@/components/sections";
 import { getArticlesFromDB } from "@/lib/content/articles";
 import { getVideosFromDB } from "@/lib/content/videos";
+import { getTopicItemsForTrending } from "@/lib/content/topics";
 import { getCurrentUser } from "@/lib/auth";
 import styles from "./page.module.css";
 
@@ -18,6 +19,7 @@ export default async function Home() {
     getCurrentUser(),
     getArticlesFromDB(6),
     getVideosFromDB(15),
+    getTopicItemsForTrending(6)
   ]);
   const isAdmin = user?.role === "admin";
 
@@ -47,7 +49,7 @@ export default async function Home() {
         </section>
 
         {/* Trending Topics */}
-        <TrendingTopics />
+        <TrendingTopics initialTopics={topics} isAdmin={!!isAdmin} />
 
         {/* Another Ad */}
         <section className={styles.adSection}>
