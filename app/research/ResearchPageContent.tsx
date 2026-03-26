@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import EditArticleModal from "@/components/articles/EditArticleModal";
 import type { ResearchPaper } from "@/lib/content/research";
 import styles from "./page.module.css";
@@ -28,6 +29,16 @@ export default function ResearchPageContent({ papers, isAdmin }: ResearchPageCon
                 Edit
               </button>
             )}
+            <Link
+              href={`/research/${paper.slug}/discussion`}
+              className={styles.commentLink}
+              aria-label="Open comments"
+              title="Comments"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+              </svg>
+            </Link>
             <div className={styles.paperMeta}>
               <span className={styles.journal}>{paper.source}</span>
               <span className={styles.year}>{paper.year}</span>
