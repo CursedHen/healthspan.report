@@ -9,6 +9,8 @@ export interface Article {
   imageUrl: string;
   slug: string;
   externalUrl?: string; // Link to original article (for RSS-sourced content)
+  sourceName?: string;
+  evidenceLevel?: "High" | "Moderate" | "Emerging";
 }
 
 export interface Video {
@@ -21,6 +23,7 @@ export interface Video {
   publishedAt: string;
   duration: string;
   videoUrl: string;
+  contentLabel?: string;
 }
 
 export interface Podcast {
