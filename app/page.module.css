@@ -219,6 +219,19 @@
   font-size: 0.7rem;
 }
 
+.adSection {
+  width: 100%;
+  padding: var(--space-md) 0;
+}
+
+.adContainer {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  justify-content: center;
+}
+
 .adBanner {
   height: var(--space-4xl);
   border: 5px dashed var(--color-border);
@@ -472,6 +485,10 @@
   .container {
     padding: 0 var(--space-xl);
     gap: var(--space-xl);
+  }
+
+  .adContainer {
+    padding: 0 var(--space-xl);
   }
 
   .section {
