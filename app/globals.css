@@ -12,7 +12,7 @@
   --color-primary-light: #E8F4F5;
   --color-primary-muted: #B8DFE2;
 
-  /* Brand Colors - Blue */
+  /* Brand Colors */
   --color-brand-blue-sky: #D5ECFF;
   --color-brand-green: #6EBE3F;
 
@@ -26,6 +26,7 @@
   --color-text-muted: #64748B;
   --color-text-light: #94A3B8;
   --color-text-white: #ffffff;
+  --color-text-blue: #0f6ea1;
 
   /* Backgrounds */
   --color-bg: #F8FAFC;
@@ -34,10 +35,13 @@
   --color-surface: #FFFFFF;
   --color-surface-alt: #F4FAFF;
   --color-surface-elevated: #FFFFFF;
+  --color-bg-lightblue: #E4F3FF;
+  --color-bg-lightgreen: #F0FFE5;
 
   /* Borders */
   --color-border: #E2E8F0;
   --color-border-light: #F1F5F9;
+  --color-border-blue: #d2e1f0;
 
   /* Semantic Colors */
   --color-success: #10B981;
@@ -61,6 +65,7 @@
   --space-4xl: 6rem;
 
   /* Border Radius */
+  --radius-xs: 0.0625rem;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;

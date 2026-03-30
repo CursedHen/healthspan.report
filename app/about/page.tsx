@@ -1,5 +1,6 @@
 import { Header, Footer } from "@/components/layout";
-import { Button, EditorialPageIntro } from "@/components/ui";
+import { EditorialPageIntro } from "@/components/ui";
+import { SubscribeCta } from "./SubscribeCta";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -75,7 +76,7 @@ export default function AboutPage() {
               Get weekly healthspan research highlights, new videos, and top
               stories.
             </p>
-            <Button>Subscribe to Newsletter</Button>
+            <SubscribeCta />
           </section>
         </div>
       </main>

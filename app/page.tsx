@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Header, Footer } from "@/components/layout";
-import { articles, latestVideos } from "@/data/mockData";
+import { articles, latestVideos, podcasts } from "@/data/mockData";
 import type { RSSAPIResponse, RSSSource } from "@/types/rss";
 import styles from "./page.module.css";
 
@@ -27,6 +27,15 @@ type HomeArticle = {
   externalUrl: string;
 };
 
+type HomePodcast = {
+  id: string;
+  title: string;
+  thumbnailUrl: string;
+  publisher: string;
+  publishedAt: string;
+  url: string;
+};
+
 function CommentIcon() {
   return (
     <svg
@@ -44,19 +53,168 @@ function CommentIcon() {
   );
 }
 
+function TopicSection({
+  title,
+  viewAllHref,
+  articles,
+}: {
+  title: string;
+  viewAllHref: string;
+  articles: HomeArticle[];
+}) {
+  const columns = useMemo(
+    () =>
+      Array.from({ length: 3 }, (_, columnIndex) =>
+        loopItems(articles, 6, columnIndex)
+      ),
+    [articles]
+  );
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+        <Link href={viewAllHref} className={styles.viewAll}>
+          View all
+        </Link>
+      </div>
+
+      <div className={styles.trendingColumns}>
+        {columns.map((column, columnIndex) => (
+          <div
+            key={`column-${columnIndex}`}
+            className={`${styles.topicColumn} ${
+              columnIndex === 1 ? styles.topicColumnAlt : ""
+            }`}
+          >
+            {column.map((article, rowIndex) => {
+              const href = normalizeHref(article.externalUrl, "/articles");
+              const isExternal = isExternalHref(href);
+
+              return (
+                <a
+                  key={`${article.id}-${columnIndex}-${rowIndex}`}
+                  href={href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className={styles.topicRow}
+                >
+                  <div className={styles.topicThumb}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={article.imageUrl}
+                      alt={article.title}
+                      className={styles.thumbImage}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className={styles.topicMeta}>
+                    <h4>{article.title}</h4>
+                    <p>
+                      {formatDate(article.publishedAt)}
+                      <span>|</span>
+                      {article.readTime}
+                    </p>
+                  </div>
+                  <CommentIcon />
+                </a>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+interface MediaItem {
+  id: string;
+  title: string;
+  thumbnailUrl: string;
+  publishedAt: string;
+  groupName: string;
+  url: string;
+}
+
+function GroupedMediaSection({
+  title,
+  items,
+  viewAllHref,
+  maxRows,
+}: {
+  title: string;
+  items: MediaItem[];
+  viewAllHref: string;
+  maxRows?: number;
+}) {
+  const groups = useMemo(() => {
+    const g: Record<string, MediaItem[]> = {};
+    items.forEach((item) => {
+      if (!g[item.groupName]) g[item.groupName] = [];
+      g[item.groupName].push(item);
+    });
+    return g;
+  }, [items]);
+
+  const displayedGroups = maxRows ? Object.entries(groups).slice(0, maxRows) : Object.entries(groups);
+
+  return (
+    <section className={styles.videoSection}>
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.sectionTitle}>{title}</h2> 
+      </div>
+      <div className={styles.videoRows}>
+        {displayedGroups.map(([groupName, groupItems], i) => (
+          <div key={i} className={styles.channelGroup}>
+            <h3 className={styles.channelTitle}>{groupName}</h3>
+            <div className={styles.videoRow}>
+              {groupItems.map((item, j) => {
+                const href = normalizeHref(item.url, viewAllHref);
+              const isExternal = isExternalHref(href);
+              return (
+                <a
+                    key={`${item.id}-${i}-${j}`}
+                  href={href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className={styles.videoCard}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                      src={item.thumbnailUrl}
+                      alt={item.title}
+                    className={styles.videoCardImage}
+                    loading="lazy"
+                  />
+                    <div className={styles.videoCardContent}>
+                      <h3 className={styles.videoCardTitle}>{item.title}</h3>
+                      <p className={styles.videoCardDate}>{item.publishedAt}</p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [videoItems, setVideoItems] = useState<HomeVideo[]>(createFallbackVideos());
   const [articleItems, setArticleItems] = useState<HomeArticle[]>(createFallbackArticles());
-  const videoFilters = ["For You", "Latest", "Research", "Interviews", "Podcasts"];
+  const [podcastItems, setPodcastItems] = useState<HomePodcast[]>(createFallbackPodcasts());
 
   useEffect(() => {
     let isCancelled = false;
 
     async function hydrateHomepageLinks() {
       try {
-        const [videoResponse, articleResponse] = await Promise.all([
+        const [videoResponse, articleResponse, podcastResponse] = await Promise.all([
           fetch("/api/rss?type=video"),
           fetch("/api/rss?type=article"),
+          fetch("/api/rss?type=video"),
         ]);
 
         if (!isCancelled && videoResponse.ok) {
@@ -74,6 +232,15 @@ export default function Home() {
             setArticleItems(mappedArticles);
           }
         }
+
+        if (!isCancelled && podcastResponse.ok) {
+          const podcastPayload = (await podcastResponse.json()) as RSSAPIResponse;
+          console.log("[Homepage] Raw Podcast Response:", podcastPayload);
+          const mappedPodcasts = mapPodcastSources(podcastPayload.sources || []);
+          if (mappedPodcasts.length > 0) {
+            setPodcastItems(mappedPodcasts);
+          }
+        }
       } catch (error) {
         console.error("Homepage feed hydration failed:", error);
       }
@@ -86,23 +253,39 @@ export default function Home() {
     };
   }, []);
 
-  const featuredVideo = videoItems[0] || createFallbackVideos()[0];
+  const featuredVideo = videoItems[0];
   const sideVideos = useMemo(() => {
     const base = videoItems.length > 1 ? videoItems.slice(1) : videoItems;
     return loopItems(base, 6);
   }, [videoItems]);
 
-  const trendingColumns = useMemo(
+  const mediaVideos = useMemo<MediaItem[]>(
     () =>
-      Array.from({ length: 3 }, (_, columnIndex) =>
-        loopItems(articleItems, 6, columnIndex)
-      ),
-    [articleItems]
+      videoItems.map((v) => ({
+        id: v.id,
+        title: v.title,
+        thumbnailUrl: v.thumbnailUrl,
+        publishedAt: v.publishedAt,
+        groupName: v.channelName,
+        url: v.videoUrl,
+      })),
+    [videoItems]
   );
 
-  const lifestyleStories = useMemo(() => loopItems(articleItems, 4), [articleItems]);
+  const mediaPodcasts = useMemo<MediaItem[]>(
+    () =>
+      podcastItems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        thumbnailUrl: p.thumbnailUrl,
+        publishedAt: p.publishedAt,
+        groupName: p.publisher,
+        url: p.url,
+      })),
+    [podcastItems]
+  );
 
-  const featuredVideoHref = normalizeHref(featuredVideo.videoUrl, "/videos");
+  const featuredVideoHref = featuredVideo ? normalizeHref(featuredVideo.videoUrl, "/videos") : "#";
   const featuredVideoExternal = isExternalHref(featuredVideoHref);
 
   return (
@@ -111,25 +294,10 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.container}>
+          {featuredVideo && (
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Featured Video</h2>
-              <Link href="/videos" className={styles.viewAll}>
-                View all videos
-              </Link>
-            </div>
-            <div className={styles.videoFilters} aria-label="Video feed filters">
-              {videoFilters.map((filter, index) => (
-                <button
-                  key={filter}
-                  type="button"
-                  className={`${styles.videoFilter} ${
-                    index === 0 ? styles.videoFilterActive : ""
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
             </div>
             <div className={styles.featuredVideoLayout}>
               <div className={styles.playerColumn}>
@@ -165,142 +333,91 @@ export default function Home() {
 
               <aside className={styles.upNextPanel} aria-label="Up next videos">
                 <p className={styles.upNextHeading}>Up next</p>
-                {sideVideos.map((video, index) => {
-                  const href = normalizeHref(video.videoUrl, "/videos");
-                  const isExternal = isExternalHref(href);
-
-                  return (
-                    <a
-                      key={`${video.id}-${index}`}
-                      href={href}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noopener noreferrer" : undefined}
-                      className={styles.upNextItem}
-                    >
-                      <div className={styles.upNextThumb}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={video.thumbnailUrl}
-                          alt={video.title}
-                          className={styles.thumbImage}
-                          loading="lazy"
-                        />
-                        {video.duration && (
-                          <span className={styles.upNextDuration}>{video.duration}</span>
-                        )}
-                      </div>
-                      <div className={styles.upNextMeta}>
-                        <h4>{video.title}</h4>
-                        <p>{video.channelName}</p>
-                        <p>{video.publishedAt}</p>
-                      </div>
-                    </a>
-                  );
-                })}
-              </aside>
-            </div>
-          </section>
-
-          <div className={styles.adBanner}>Advertisement</div>
-
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Trending Topics</h2>
-              <Link href="/topics" className={styles.viewAll}>
-                View all
-              </Link>
-            </div>
-
-            <div className={styles.trendingColumns}>
-              {trendingColumns.map((column, columnIndex) => (
-                <div
-                  key={`column-${columnIndex}`}
-                  className={`${styles.topicColumn} ${
-                    columnIndex === 1 ? styles.topicColumnAlt : ""
-                  }`}
-                >
-                  {column.map((article, rowIndex) => {
-                    const href = normalizeHref(article.externalUrl, "/articles");
+                <div className={styles.upNextGrid}>
+                  {sideVideos.map((video, index) => {
+                    const href = normalizeHref(video.videoUrl, "/videos");
                     const isExternal = isExternalHref(href);
 
                     return (
                       <a
-                        key={`${article.id}-${columnIndex}-${rowIndex}`}
+                        key={`${video.id}-${index}`}
                         href={href}
                         target={isExternal ? "_blank" : undefined}
                         rel={isExternal ? "noopener noreferrer" : undefined}
-                        className={styles.topicRow}
+                        className={styles.upNextItem}
                       >
-                        <div className={styles.topicThumb}>
+                        <div className={styles.upNextThumb}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={article.imageUrl}
-                            alt={article.title}
+                            src={video.thumbnailUrl}
+                            alt={video.title}
                             className={styles.thumbImage}
                             loading="lazy"
                           />
                         </div>
-                        <div className={styles.topicMeta}>
-                          <h4>{article.title}</h4>
-                          <p>
-                            {formatDate(article.publishedAt)}
-                            <span>|</span>
-                            {article.readTime}
+                        <div className={styles.upNextMeta}>
+                          <h4>{video.title}</h4>
+                          <p className={styles.upNextDate}>
+                            {video.publishedAt}
+                            {video.duration && ` • ${video.duration}`}
                           </p>
+                          <p className={styles.upNextChannel}>{video.channelName}</p>
                         </div>
-                        <CommentIcon />
                       </a>
                     );
                   })}
                 </div>
-              ))}
+              </aside>
             </div>
           </section>
+          )}
 
           <div className={styles.adBanner}>Advertisement</div>
 
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Lifestyle News</h2>
-              <Link href="/articles" className={styles.viewAll}>
-                Browse all
-              </Link>
-            </div>
+          <TopicSection
+            title="Trending Topics"
+            viewAllHref="/topics"
+            articles={articleItems}
+          />
 
-            <div className={styles.lifestyleGrid}>
-              {lifestyleStories.map((story, index) => {
-                const href = normalizeHref(story.externalUrl, "/articles");
-                const isExternal = isExternalHref(href);
+          <div className={styles.adBanner}>Advertisement</div>
 
-                return (
-                  <a
-                    key={`${story.id}-life-${index}`}
-                    href={href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                    className={styles.lifestyleCard}
-                  >
-                    <div className={styles.lifestyleImage}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={story.imageUrl}
-                        alt={story.title}
-                        className={styles.thumbImage}
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className={styles.lifestyleContent}>
-                      <h3>{story.title}</h3>
-                      <p>{story.excerpt}</p>
-                      <span className={styles.lifestyleMeta}>
-                        {formatDate(story.publishedAt)} | {story.readTime}
-                      </span>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </section>
+          <TopicSection
+            title="Lifestyle News"
+            viewAllHref="/articles"
+            articles={articleItems}
+          />
+
+          <div className={styles.adBanner}>Advertisement</div>
+
+          <GroupedMediaSection
+            title="Top Youtube Channels"
+            items={mediaVideos}
+            viewAllHref="/videos"
+          />
+
+          <TopicSection
+            title="Lifestyle News"
+            viewAllHref="/articles"
+            articles={articleItems}
+          />
+
+          <div className={styles.adBanner}>Advertisement</div>
+
+          <GroupedMediaSection
+            title="Top Podcasts"
+            items={mediaPodcasts}
+            viewAllHref="/podcasts"
+            maxRows={3}
+          />
+
+          <div className={styles.adBanner}>Advertisement</div>
+
+          <TopicSection
+            title="Supplement News"
+            viewAllHref="/articles"
+            articles={articleItems}
+          />
         </div>
       </main>
 
@@ -375,6 +492,28 @@ function mapArticleSources(sources: RSSSource[]): HomeArticle[] {
   );
 }
 
+function mapPodcastSources(sources: RSSSource[]): HomePodcast[] {
+  const podcasts: HomePodcast[] = [];
+
+  for (const source of sources) {
+    for (const item of source.articles) {
+      podcasts.push({
+        id: item.link || `${source.source.feedUrl}-${item.title}`,
+        title: item.title || "Untitled podcast",
+        thumbnailUrl:
+          item.thumbnail || source.source.image || "/images/placeholders/video.svg",
+        publisher: source.source.title,
+        publishedAt: formatDate(item.pubDate),
+        url: item.link || "/podcasts",
+      });
+    }
+  }
+
+  return podcasts.sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
 function createFallbackVideos(): HomeVideo[] {
   return latestVideos.map((video, index) => ({
     id: `fallback-video-${index}`,
@@ -396,6 +535,17 @@ function createFallbackArticles(): HomeArticle[] {
     readTime: article.readTime,
     imageUrl: article.imageUrl,
     externalUrl: "/articles",
+  }));
+}
+
+function createFallbackPodcasts(): HomePodcast[] {
+  return podcasts.map((podcast, index) => ({
+    id: `fallback-podcast-${index}`,
+    title: podcast.name,
+    thumbnailUrl: podcast.imageUrl,
+    publisher: podcast.publisher,
+    publishedAt: formatDate(podcast.publishedAt),
+    url: podcast.podcastUrl || "/podcasts",
   }));
 }
 
