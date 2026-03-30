@@ -31,7 +31,7 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
     
     for (const item of source.articles) {
       // Use item thumbnail, then source-specific placeholder (skip external source images that may fail)
-      const imageUrl = item.thumbnail || sourcePlaceholder;
+      const imageUrl = resolveArticleImage(item.thumbnail, sourcePlaceholder);
 
       articles.push({
         id: item.link,
@@ -55,6 +55,26 @@ function mapRSSToArticles(sources: RSSSource[]): Article[] {
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
     .slice(0, 6);
+}
+
+function resolveArticleImage(
+  primary: string | undefined,
+  fallback: string
+): string {
+  return normalizeExternalImageUrl(primary) || fallback;
+}
+
+function normalizeExternalImageUrl(raw: string | undefined): string | null {
+  if (!raw) return null;
+
+  const value = raw.trim();
+  if (!value) return null;
+  if (value.startsWith("/")) return value;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, "https://");
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(value)) return `https://${value}`;
+
+  return null;
 }
 
 export default function ArticleGrid() {

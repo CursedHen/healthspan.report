@@ -53,6 +53,15 @@ function CommentIcon() {
   );
 }
 
+function attachImageFallback(
+  event: React.SyntheticEvent<HTMLImageElement>,
+  fallbackSrc: string
+) {
+  const image = event.currentTarget;
+  image.onerror = null;
+  image.src = fallbackSrc;
+}
+
 function TopicSection({
   title,
   viewAllHref,
@@ -106,6 +115,9 @@ function TopicSection({
                       alt={article.title}
                       className={styles.thumbImage}
                       loading="lazy"
+                      onError={(event) =>
+                        attachImageFallback(event, "/images/placeholders/article.svg")
+                      }
                     />
                   </div>
                   <div className={styles.topicMeta}>
@@ -185,6 +197,9 @@ function GroupedMediaSection({
                       alt={item.title}
                     className={styles.videoCardImage}
                     loading="lazy"
+                    onError={(event) =>
+                      attachImageFallback(event, "/images/placeholders/video.svg")
+                    }
                   />
                     <div className={styles.videoCardContent}>
                       <h3 className={styles.videoCardTitle}>{item.title}</h3>
@@ -313,6 +328,9 @@ export default function Home() {
                     alt={featuredVideo.title}
                     className={styles.featuredImage}
                     loading="eager"
+                    onError={(event) =>
+                      attachImageFallback(event, "/images/placeholders/video.svg")
+                    }
                   />
                   <div className={styles.playBadge} aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -353,6 +371,9 @@ export default function Home() {
                             alt={video.title}
                             className={styles.thumbImage}
                             loading="lazy"
+                            onError={(event) =>
+                              attachImageFallback(event, "/images/placeholders/video.svg")
+                            }
                           />
                         </div>
                         <div className={styles.upNextMeta}>
@@ -453,8 +474,11 @@ function mapVideoSources(sources: RSSSource[]): HomeVideo[] {
       videos.push({
         id: item.link || `${source.source.feedUrl}-${item.title}`,
         title: item.title || "Untitled video",
-        thumbnailUrl:
-          item.thumbnail || source.source.image || "/images/placeholders/video.svg",
+        thumbnailUrl: resolveImageUrl(
+          item.thumbnail,
+          source.source.image,
+          "/images/placeholders/video.svg"
+        ),
         channelName: source.source.title,
         publishedAt: formatDate(item.pubDate),
         duration: "",
@@ -480,8 +504,11 @@ function mapArticleSources(sources: RSSSource[]): HomeArticle[] {
         excerpt,
         publishedAt: item.pubDate,
         readTime: estimateReadTime(excerpt),
-        imageUrl:
-          item.thumbnail || source.source.image || "/images/placeholders/article.svg",
+        imageUrl: resolveImageUrl(
+          item.thumbnail,
+          source.source.image,
+          "/images/placeholders/article.svg"
+        ),
         externalUrl: item.link || "/articles",
       });
     }
@@ -500,8 +527,11 @@ function mapPodcastSources(sources: RSSSource[]): HomePodcast[] {
       podcasts.push({
         id: item.link || `${source.source.feedUrl}-${item.title}`,
         title: item.title || "Untitled podcast",
-        thumbnailUrl:
-          item.thumbnail || source.source.image || "/images/placeholders/video.svg",
+        thumbnailUrl: resolveImageUrl(
+          item.thumbnail,
+          source.source.image,
+          "/images/placeholders/video.svg"
+        ),
         publisher: source.source.title,
         publishedAt: formatDate(item.pubDate),
         url: item.link || "/podcasts",
@@ -547,6 +577,31 @@ function createFallbackPodcasts(): HomePodcast[] {
     publishedAt: formatDate(podcast.publishedAt),
     url: podcast.podcastUrl || "/podcasts",
   }));
+}
+
+function resolveImageUrl(
+  primary: string | undefined,
+  secondary: string | undefined,
+  fallback: string
+): string {
+  return normalizeImageUrl(primary) || normalizeImageUrl(secondary) || fallback;
+}
+
+function normalizeImageUrl(raw: string | undefined): string | null {
+  if (!raw) return null;
+
+  const value = raw.trim();
+  if (!value) return null;
+
+  if (value.startsWith("/")) return value;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, "https://");
+
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(value)) {
+    return `https://${value}`;
+  }
+
+  return null;
 }
 
 function estimateReadTime(content: string): string {

@@ -31,7 +31,11 @@ export default function ArticleCard({
   article,
   variant = "default",
 }: ArticleCardProps) {
+  const fallbackImageUrl = getArticleFallbackImage(article);
+  const primaryImageUrl = normalizeImageUrl(article.imageUrl);
+  const [usingFallback, setUsingFallback] = useState(!primaryImageUrl);
   const [imageError, setImageError] = useState(false);
+  const imageSrc = usingFallback ? fallbackImageUrl : primaryImageUrl || fallbackImageUrl;
 
   const href = article.externalUrl || `/articles/${article.slug}`;
   const isExternal = !!article.externalUrl;
@@ -53,7 +57,7 @@ export default function ArticleCard({
     </Link>
   );
 
-  const hasImage = article.imageUrl && !imageError;
+  const hasImage = !!imageSrc && !imageError;
 
   return (
     <article className={`${styles.card} ${styles[variant]}`}>
@@ -61,10 +65,16 @@ export default function ArticleCard({
         {hasImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={article.imageUrl}
+            src={imageSrc}
             alt={article.title}
             className={styles.image}
-            onError={() => setImageError(true)}
+            onError={() => {
+              if (!usingFallback) {
+                setUsingFallback(true);
+                return;
+              }
+              setImageError(true);
+            }}
             loading="lazy"
           />
         ) : (
@@ -96,4 +106,35 @@ function formatDate(rawDate: string): string {
     day: "numeric",
     year: "numeric",
   }).format(date);
+}
+
+function getArticleFallbackImage(article: Article): string {
+  const sourceText = `${article.sourceName || ""} ${article.author || ""} ${article.category || ""}`
+    .toLowerCase()
+    .trim();
+
+  if (sourceText.includes("peter attia")) {
+    return "/images/placeholders/attia.png";
+  }
+  if (sourceText.includes("longevity.technology") || sourceText.includes("longevity")) {
+    return "/images/placeholders/longevity.png";
+  }
+  if (sourceText.includes("novos")) {
+    return "/images/placeholders/NOVOSLabs.png";
+  }
+
+  return "/images/placeholders/article.svg";
+}
+
+function normalizeImageUrl(rawUrl: string | undefined): string | null {
+  if (!rawUrl) return null;
+
+  const value = rawUrl.trim();
+  if (!value) return null;
+  if (value.startsWith("/")) return value;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, "https://");
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(value)) return `https://${value}`;
+
+  return null;
 }
