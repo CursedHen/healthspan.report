@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Logo, Button, SearchBar, ThemeToggle } from "@/components/ui";
+import { Logo, Button, SearchBar } from "@/components/ui";
 import { navItems } from "@/data/mockData";
 import styles from "./MobileMenu.module.css";
 
@@ -69,10 +69,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <SearchBar />
         </div>
 
-        <div className={styles.themeRow}>
-          <p className={styles.themeLabel}>Appearance</p>
-          <ThemeToggle compact />
-        </div>
+        
 
         <nav className={styles.nav}>
           {navItems.map((item) => (
