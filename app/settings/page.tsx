@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Header, Footer } from "@/components/layout";
 import { ThemeToggle, Button } from "@/components/ui";
+import { useUserStore } from "@/store/useUserStore";
+import { createClient } from "@/utils/supabase/client";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
@@ -10,6 +12,13 @@ export default function SettingsPage() {
   const [fontSize, setFontSize] = useState(16);
   const [fontFamily, setFontFamily] = useState("Roboto (Default)");
   const [language, setLanguage] = useState("English");
+
+  // Account Information State
+  const profile = useUserStore((s) => s.profile);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -27,6 +36,40 @@ export default function SettingsPage() {
     document.documentElement.setAttribute("data-reduce-motion", savedMotion.toString());
     document.documentElement.style.fontSize = `${savedFontSize}px`;
   }, []);
+
+  
+  useEffect(() => {
+    if (profile) {
+      setFirstName(profile.firstName || "");
+      setLastName(profile.lastName || "");
+      setUsername(profile.username || "");
+    }
+  }, [profile]);
+
+  const handleUpdateProfile = async () => {
+    if (!profile?.id) return;
+    
+    setIsSaving(true);
+    const supabase = createClient();
+
+    
+    const { error } = await supabase
+      .from("users")
+      .update({
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+      })
+      .eq("id", profile.id);
+
+    if (error) {
+      alert(`Error updating profile: ${error.message}`);
+    } else {
+      alert("Profile updated successfully!");
+      //Might want to call a function here to refresh the global store
+    }
+    setIsSaving(false);
+  };
 
   return (
     <div className={styles.page}>
@@ -151,7 +194,44 @@ export default function SettingsPage() {
             <p className={styles.sectionDescription}>
               Manage your profile details and contact information.
             </p>
-            <div className={styles.placeholderText}>Account details functionality coming soon...</div>
+            
+            {!profile ? (
+              <div className={styles.placeholderText}>Please log in to manage your account settings.</div>
+            ) : (
+              <div className={styles.accountForm}>
+                <div className={styles.controlRow}>
+                  <div className={styles.control}>
+                    <label className={styles.label}>First Name</label>
+                    <input 
+                      className={styles.select} 
+                      value={firstName} 
+                      onChange={(e) => setFirstName(e.target.value)} 
+                    />
+                  </div>
+                  <div className={styles.control}>
+                    <label className={styles.label}>Last Name</label>
+                    <input 
+                      className={styles.select} 
+                      value={lastName} 
+                      onChange={(e) => setLastName(e.target.value)} 
+                    />
+                  </div>
+                </div>
+                <div className={styles.control} style={{ marginTop: 'var(--space-md)' }}>
+                  <label className={styles.label}>Username</label>
+                  <input 
+                    className={styles.select} 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                  />
+                </div>
+                <div className={styles.formActions}>
+                  <Button variant="primary" onClick={handleUpdateProfile} disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </main>

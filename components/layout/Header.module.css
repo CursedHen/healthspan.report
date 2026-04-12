@@ -166,7 +166,9 @@
 }
 
 .dropdownItem {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   width: 100%;
   border: none;
   background: transparent;
@@ -181,6 +183,11 @@
 .dropdownItem:hover {
   background: #f5fbff;
   color: var(--color-primary-hover);
+}
+
+.dropdownIcon {
+  width: 16px;
+  height: 16px;
 }
 
 @media (min-width: 768px) {
