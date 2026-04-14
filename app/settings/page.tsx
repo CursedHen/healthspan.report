@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header, Footer } from "@/components/layout";
 import { ThemeToggle, Button } from "@/components/ui";
 import { useUserStore } from "@/store/useUserStore";
@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [fontFamily, setFontFamily] = useState("Roboto (Default)");
@@ -15,10 +16,13 @@ export default function SettingsPage() {
 
   // Account Information State
   const profile = useUserStore((s) => s.profile);
+  const setProfile = useUserStore((s) => (s as any).setProfile);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -50,7 +54,18 @@ export default function SettingsPage() {
     if (!profile?.id) return;
     
     setIsSaving(true);
-    const supabase = createClient();
+
+    
+    if (newPassword) {
+      const { error: authError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      if (authError) {
+        alert(`Password update failed: ${authError.message}`);
+        setIsSaving(false);
+        return;
+      }
+    }
 
     
     const { error } = await supabase
@@ -65,8 +80,14 @@ export default function SettingsPage() {
     if (error) {
       alert(`Error updating profile: ${error.message}`);
     } else {
-      alert("Profile updated successfully!");
-      //Might want to call a function here to refresh the global store
+      // Update the global store so the Header and other components reflect changes
+      if (setProfile && profile) {
+        setProfile({ ...profile, firstName, lastName, username });
+      }
+      setNewPassword("");
+      
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
     }
     setIsSaving(false);
   };
@@ -203,7 +224,7 @@ export default function SettingsPage() {
                   <div className={styles.control}>
                     <label className={styles.label}>First Name</label>
                     <input 
-                      className={styles.select} 
+                      className={styles.input} 
                       value={firstName} 
                       onChange={(e) => setFirstName(e.target.value)} 
                     />
@@ -211,7 +232,7 @@ export default function SettingsPage() {
                   <div className={styles.control}>
                     <label className={styles.label}>Last Name</label>
                     <input 
-                      className={styles.select} 
+                      className={styles.input} 
                       value={lastName} 
                       onChange={(e) => setLastName(e.target.value)} 
                     />
@@ -220,14 +241,30 @@ export default function SettingsPage() {
                 <div className={styles.control} style={{ marginTop: 'var(--space-md)' }}>
                   <label className={styles.label}>Username</label>
                   <input 
-                    className={styles.select} 
+                    className={styles.input} 
                     value={username} 
                     onChange={(e) => setUsername(e.target.value)} 
                   />
                 </div>
+                <div className={styles.control} style={{ marginTop: 'var(--space-md)' }}>
+                  <label className={styles.label}>New Password (leave blank to keep current)</label>
+                  <input 
+                    type="password"
+                    className={styles.input} 
+                    value={newPassword} 
+                    onChange={(e) => setNewPassword(e.target.value)} 
+                    placeholder="••••••••"
+                  />
+                </div>
                 <div className={styles.formActions}>
-                  <Button variant="primary" onClick={handleUpdateProfile} disabled={isSaving}>
-                    {isSaving ? "Saving..." : "Save Changes"}
+                  <Button 
+                    variant={isSaved ? "secondary" : "primary"} 
+                    onClick={handleUpdateProfile} 
+                    disabled={isSaving || isSaved}
+                  >
+                    {isSaving ? "Saving..." : 
+                     isSaved ? "Saved ✓" : 
+                     "Save Changes"}
                   </Button>
                 </div>
               </div>
