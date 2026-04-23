@@ -8,22 +8,31 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/login?message=email-verified";
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/";
 
+  const supabase = await createClient();
+
+  // Handle OAuth code exchange (Google, etc.)
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      redirect(next);
+    }
+    redirect("/login?message=oauth-error");
+  }
+
+  // Handle email OTP verification
   if (token_hash && type) {
-    const supabase = await createClient();
-
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     });
 
     if (!error) {
-      // Redirect user to specified redirect URL or login with success message
-      redirect(next);
+      redirect("/login?message=email-verified");
     }
   }
 
-  // Redirect the user to an error page with some instructions
   redirect("/login?message=verification-error");
 }
