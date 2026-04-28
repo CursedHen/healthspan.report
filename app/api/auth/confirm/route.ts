@@ -1,11 +1,10 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
-import { type NextRequest } from "next/server";
-import { redirect } from "next/navigation";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams, origin } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const code = searchParams.get("code");
@@ -17,22 +16,18 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      redirect(next);
+      return NextResponse.redirect(`${origin}${next}`);
     }
-    redirect("/login?message=oauth-error");
+    return NextResponse.redirect(`${origin}/login?message=oauth-error`);
   }
 
   // Handle email OTP verification
   if (token_hash && type) {
-    const { error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash,
-    });
-
+    const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (!error) {
-      redirect("/login?message=email-verified");
+      return NextResponse.redirect(`${origin}/login?message=email-verified`);
     }
   }
 
-  redirect("/login?message=verification-error");
+  return NextResponse.redirect(`${origin}/login?message=verification-error`);
 }
