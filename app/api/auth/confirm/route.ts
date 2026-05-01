@@ -14,8 +14,26 @@ export async function GET(request: NextRequest) {
 
   // Handle OAuth code exchange (Google, etc.)
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && data.user) {
+      const user = data.user;
+      const fullName = user.user_metadata?.full_name as string | undefined;
+      const firstName = fullName?.split(" ")[0] ?? "";
+      const lastName = fullName?.split(" ").slice(1).join(" ") ?? "";
+      const username = firstName.toLowerCase() || user.email?.split("@")[0] || "user";
+
+      await supabase.from("users").upsert(
+        {
+          id: user.id,
+          email: user.email,
+          first_name: firstName || null,
+          last_name: lastName || null,
+          username: username,
+          role: "member",
+        },
+        { onConflict: "id" }
+      );
+
       return NextResponse.redirect(`${origin}${next}`);
     }
     return NextResponse.redirect(`${origin}/login?message=oauth-error`);
