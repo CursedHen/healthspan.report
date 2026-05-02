@@ -50,7 +50,6 @@ useEffect(() => {
       .eq("id", user.id)
       .single()
 
-      console.log("DB user:", userData)
 
 
     if (userData) {
