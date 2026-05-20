@@ -38,6 +38,7 @@ export default function MyArticlesPage() {
   const [addingFolder, setAddingFolder] = useState(false);
   const [tagInputId, setTagInputId] = useState<string | null>(null);
   const [tagInputValue, setTagInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const supabase = createClient();
   const router = useRouter();
 
@@ -82,26 +83,19 @@ export default function MyArticlesPage() {
   // ── Folders ──────────────────────────────────────────────
 
   async function handleCreateFolder() {
-  const name = newFolderName.trim();
-  if (!name) return;
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-
-  const { data, error } = await supabase
-    .from("folders")
-    .insert({ name, user_id: user.id })
-    .select()
-    .single();
-
-  if (!error && data) {
-    setFolders((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-    setNewFolderName("");
-    setAddingFolder(false);
-  } else {
-    console.error(error);
+    const name = newFolderName.trim();
+    if (!name) return;
+    const { data, error } = await supabase
+      .from("folders")
+      .insert({ name })
+      .select()
+      .single();
+    if (!error && data) {
+      setFolders((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+      setNewFolderName("");
+      setAddingFolder(false);
+    }
   }
-}
 
   async function handleDeleteFolder(folderId: string) {
     await supabase.from("folders").delete().eq("id", folderId);
@@ -126,43 +120,40 @@ export default function MyArticlesPage() {
   // ── Tags ─────────────────────────────────────────────────
 
   async function handleAddTag(articleId: string) {
-  const name = tagInputValue.trim();
-  if (!name) return;
+    const name = tagInputValue.trim();
+    if (!name) return;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+    // Find or create the tag
+    let tag = allTags.find((t) => t.name.toLowerCase() === name.toLowerCase());
+    if (!tag) {
+      const { data, error } = await supabase
+        .from("tags")
+        .insert({ name })
+        .select()
+        .single();
+      if (error || !data) return;
+      tag = data;
+      setAllTags((prev) => [...prev, tag!].sort((a, b) => a.name.localeCompare(b.name)));
+    }
 
-  let tag = allTags.find((t) => t.name.toLowerCase() === name.toLowerCase());
-  if (!tag) {
-    const { data, error: insertError } = await supabase
-      .from("tags")
-      .insert({ name, user_id: user.id })
-      .select()
-      .single();
-    if (insertError || !data) return;
-    tag = data;
-    setAllTags((prev) => [...prev, tag!].sort((a, b) => a.name.localeCompare(b.name)));
+    // Link tag to article
+    const { error } = await supabase
+      .from("article_tags")
+      .insert({ saved_article_id: articleId, tag_id: tag!.id });
+
+    if (!error) {
+      setArticles((prev) =>
+        prev.map((a) =>
+          a.id === articleId && !a.tags.find((t) => t.id === tag!.id)
+            ? { ...a, tags: [...a.tags, tag!] }
+            : a
+        )
+      );
+    }
+
+    setTagInputValue("");
+    setTagInputId(null);
   }
-
-  const { error: linkError } = await supabase
-    .from("article_tags")
-    .insert({ saved_article_id: articleId, tag_id: tag!.id });
-
-  if (!linkError) {
-    setArticles((prev) =>
-      prev.map((a) =>
-        a.id === articleId && !a.tags.find((t) => t.id === tag!.id)
-          ? { ...a, tags: [...a.tags, tag!] }
-          : a
-      )
-    );
-  }
-
-  setTagInputValue("");
-  setTagInputId(null);
-}
-
-
 
   async function handleRemoveTag(articleId: string, tagId: string) {
     await supabase
@@ -186,10 +177,17 @@ export default function MyArticlesPage() {
 
   // ── Filtered view ─────────────────────────────────────────
 
-  const visibleArticles = activeFolderId
-    ? articles.filter((a) => a.folder_id === activeFolderId)
-    : articles;
-
+const visibleArticles = articles
+  .filter((a) => activeFolderId ? a.folder_id === activeFolderId : true)
+  .filter((a) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      a.title?.toLowerCase().includes(q) ||
+      a.source?.toLowerCase().includes(q) ||
+      a.summary?.toLowerCase().includes(q)
+    );
+  });
   // ── Render ────────────────────────────────────────────────
 
   return (
@@ -264,6 +262,13 @@ export default function MyArticlesPage() {
             <h1 className={styles.heading}>
               {activeFolderId ? folders.find((f) => f.id === activeFolderId)?.name : "My Saved Articles"}
             </h1>
+            <input
+            className={styles.searchInput}
+            type="search"
+            placeholder="Search your articles…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
             {loading && <p>Loading…</p>}
 
