@@ -23,6 +23,12 @@
   gap: var(--space-xl);
 }
 
+.summarizeOverlay {
+  top: var(--space-md);
+  right: var(--space-md);
+  bottom: auto;
+}
+
 /* Featured Topic */
 .featured {
   position: relative;

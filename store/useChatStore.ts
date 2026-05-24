@@ -4,12 +4,18 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export interface PendingPrompt {
   text: string;
   articleId?: string;
+  articleUrl?: string;
 }
 
 export interface PersistedMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
+}
+
+export interface RateLimitState {
+  /** Unix ms timestamp when the limit resets. null = not limited. */
+  resetAt: number | null;
 }
 
 interface ChatStore {
@@ -28,6 +34,13 @@ interface ChatStore {
   anonymousHistory: PersistedMessage[];
   setAnonymousHistory: (messages: PersistedMessage[]) => void;
   clearAnonymousHistory: () => void;
+
+  /** True while a request is in flight (submitted or streaming). */
+  isBusy: boolean;
+  setIsBusy: (busy: boolean) => void;
+
+  rateLimit: RateLimitState;
+  setRateLimit: (rl: RateLimitState) => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -52,6 +65,12 @@ export const useChatStore = create<ChatStore>()(
       anonymousHistory: [],
       setAnonymousHistory: (messages) => set({ anonymousHistory: messages }),
       clearAnonymousHistory: () => set({ anonymousHistory: [] }),
+
+      isBusy: false,
+      setIsBusy: (busy) => set({ isBusy: busy }),
+
+      rateLimit: { resetAt: null },
+      setRateLimit: (rl) => set({ rateLimit: rl }),
     }),
     {
       name: "healthspan-chat-storage",

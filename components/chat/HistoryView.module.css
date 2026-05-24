@@ -1,0 +1,213 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-surface);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border-light);
+  gap: var(--space-sm);
+}
+
+.title {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.iconButton:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.iconButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.searchWrap {
+  position: relative;
+  margin: var(--space-md) var(--space-lg) 0;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px 8px 32px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.statusRow,
+.empty {
+  padding: var(--space-lg);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.empty p {
+  margin: 0;
+}
+
+.empty .emptyHint {
+  margin-top: var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--color-text-light);
+  line-height: 1.5;
+}
+
+.list {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-sm) 0;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border-light);
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.item:hover {
+  background: var(--color-bg-alt);
+}
+
+.item.active {
+  background: var(--color-primary-light);
+}
+
+.itemMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px var(--space-lg);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.itemMain:disabled {
+  cursor: default;
+}
+
+.itemTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
+}
+
+.itemTime {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.renameInput {
+  width: 100%;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: var(--color-surface);
+  color: var(--color-text);
+  outline: none;
+}
+
+.itemActions {
+  display: flex;
+  gap: 2px;
+  padding-right: var(--space-md);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.item:hover .itemActions,
+.item:focus-within .itemActions {
+  opacity: 1;
+}
+
+.actionButton {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.actionButton:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.actionButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 640px) {
+  .itemActions {
+    opacity: 1;
+  }
+}

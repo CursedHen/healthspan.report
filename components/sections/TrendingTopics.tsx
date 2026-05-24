@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import EditArticleModal from "@/components/articles/EditArticleModal";
+import SummarizeButton from "@/components/chat/SummarizeButton";
 import type { TrendingTopic } from "@/types";
 import styles from "./TrendingTopics.module.css";
 
@@ -169,6 +170,13 @@ export default function TrendingTopics({ initialTopics = [], isAdmin = false }: 
                 <h3 className={styles.featuredTitle}>{featured.title}</h3>
                 <p className={styles.featuredExcerpt}>{featured.excerpt}</p>
               </div>
+              <SummarizeButton
+                articleId={featured.itemId}
+                articleUrl={featured.externalUrl}
+                title={featured.title}
+                variant="overlay"
+                className={styles.summarizeOverlay}
+              />
             </TopicLink>
           )}
 
@@ -187,6 +195,13 @@ export default function TrendingTopics({ initialTopics = [], isAdmin = false }: 
                   <h4 className={styles.topicTitle}>{topic.title}</h4>
                   <p className={styles.topicExcerpt}>{topic.excerpt}</p>
                 </div>
+                <SummarizeButton
+                  articleId={topic.itemId}
+                  articleUrl={topic.externalUrl}
+                  title={topic.title}
+                  variant="overlay"
+                  className={styles.summarizeOverlay}
+                />
               </TopicLink>
             ))}
           </div>

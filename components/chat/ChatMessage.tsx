@@ -4,6 +4,7 @@ import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { UIMessage } from "ai";
+import { uiMessageToText } from "@/lib/chat/messageUtils";
 import styles from "./ChatMessage.module.css";
 
 interface ChatMessageProps {
@@ -12,15 +13,7 @@ interface ChatMessageProps {
 
 function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
-  const text = Array.isArray(message.parts)
-    ? message.parts
-        .map((part) =>
-          part.type === "text" && typeof (part as { text?: string }).text === "string"
-            ? (part as { text: string }).text
-            : "",
-        )
-        .join("")
-    : "";
+  const text = uiMessageToText(message);
 
   if (!text) return null;
 
