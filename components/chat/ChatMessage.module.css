@@ -1,0 +1,110 @@
+.message {
+  display: flex;
+  width: 100%;
+}
+
+.user {
+  justify-content: flex-end;
+}
+
+.assistant {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.user .bubble {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.assistant .bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.userText {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.markdown {
+  word-wrap: break-word;
+}
+
+.markdown :global(p) {
+  margin: 0 0 0.6em;
+}
+
+.markdown :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.markdown :global(ul),
+.markdown :global(ol) {
+  margin: 0.4em 0 0.6em;
+  padding-left: 1.4em;
+}
+
+.markdown :global(li) {
+  margin: 0.2em 0;
+}
+
+.markdown :global(strong) {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.markdown :global(code) {
+  background: var(--color-bg-alt);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.markdown :global(pre) {
+  background: var(--color-bg-alt);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  margin: 0.6em 0;
+}
+
+.markdown :global(pre code) {
+  background: none;
+  padding: 0;
+}
+
+.markdown :global(a) {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown :global(h1),
+.markdown :global(h2),
+.markdown :global(h3) {
+  margin: 0.6em 0 0.3em;
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--color-text);
+}
+
+.markdown :global(blockquote) {
+  border-left: 3px solid var(--color-border);
+  padding-left: 10px;
+  margin: 0.5em 0;
+  color: var(--color-text-secondary);
+}

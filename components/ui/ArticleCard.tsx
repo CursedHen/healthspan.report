@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Article } from "@/types";
+import { useChatStore } from "@/store/useChatStore";
 import styles from "./ArticleCard.module.css";
 
 interface ArticleCardProps {
@@ -53,6 +54,17 @@ export default function ArticleCard({
   const isExternal = !!article.externalUrl;
   const discussionHref = `/articles/${article.slug}/discussion`;
 
+  function handleSummarize(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const store = useChatStore.getState();
+    store.setPendingPrompt({
+      text: `Summarize this article: "${article.title}"`,
+      articleId: article.id,
+    });
+    store.open();
+  }
+
   const TitleLink = isExternal ? (
     <a
       href={href}
@@ -93,6 +105,18 @@ export default function ArticleCard({
           <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
         </svg>
       </Link>
+      <button
+        type="button"
+        onClick={handleSummarize}
+        className={styles.summarizeButton}
+        aria-label="Summarize this article"
+        title="Summarize with AI"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3l1.9 5.8L20 10l-5.8 1.9L12 18l-1.9-5.8L4 10l5.8-1.9L12 3z" />
+          <path d="M5 19l.7 1.7L7.5 21l-1.7.7L5 23.5 4.3 21.7 2.5 21l1.7-.7L5 19z" />
+        </svg>
+      </button>
       <div className={styles.imageWrapper}>
         {hasImage ? (
           <div className={styles.imageContainer}>
