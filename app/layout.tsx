@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import Script from "next/script";
+import ChatWidget from "@/components/chat/ChatWidget";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(() => {
@@ -74,6 +75,7 @@ export default function RootLayout({
       </head>
       <body className={`${roboto.variable} antialiased`}>
         {children}
+        <ChatWidget />
       </body>
     </html>
   );

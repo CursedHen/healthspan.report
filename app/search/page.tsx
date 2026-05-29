@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Header, Footer } from "@/components/layout";
 import type { RSSAPIResponse } from "@/types/rss";
+import SummarizeButton from "@/components/chat/SummarizeButton";
 import {
   mapSourcesToSearchItems,
   normalizeSearchQuery,
@@ -187,6 +188,14 @@ function SearchResultCard({ item }: { item: SearchItem }) {
       <div className={styles.imageWrap}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.imageUrl} alt={item.title} className={styles.image} loading="lazy" />
+        {item.type === "article" && isExternal && (
+          <SummarizeButton
+            articleUrl={item.href}
+            title={item.title}
+            variant="overlay"
+            className={styles.summarizeOverlay}
+          />
+        )}
       </div>
       <div className={styles.cardBody}>
         <span

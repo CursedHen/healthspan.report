@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Article } from "@/types";
+import SummarizeButton from "@/components/chat/SummarizeButton";
 import styles from "./ArticleCard.module.css";
 
 interface ArticleCardProps {
@@ -121,6 +122,12 @@ export default function ArticleCard({
           <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
         </svg>
       </Link>
+      <SummarizeButton
+        articleId={article.id}
+        articleUrl={article.externalUrl}
+        title={article.title}
+        variant="overlay"
+      />
       <div className={styles.imageWrapper}>
         {hasImage ? (
           <div className={styles.imageContainer}>

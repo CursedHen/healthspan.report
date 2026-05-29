@@ -26,6 +26,12 @@
   padding: var(--space-xl);
 }
 
+.summarizeOverlay {
+  top: var(--space-md);
+  right: var(--space-md);
+  bottom: auto;
+}
+
 .badge {
   margin: 0;
   text-transform: uppercase;
@@ -80,6 +86,7 @@
 }
 
 .card {
+  position: relative;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
