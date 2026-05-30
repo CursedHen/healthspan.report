@@ -182,6 +182,24 @@ useEffect(() => {
                     </svg>
                     My Articles
                   </Link>
+                  <Link
+  href="/dashboard"
+  className={styles.dropdownItem}
+  onClick={() => setShowDropdown(false)}
+>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={styles.dropdownIcon}
+  >
+    <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />
+  </svg>
+  Dashboard
+</Link>
 
                   <button
                     className={styles.dropdownItem}
